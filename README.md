@@ -22,6 +22,18 @@ npm run build        # compile et pré-rend les pages
 npm run start        # http://localhost:3000
 ```
 
+## Version HTML autonome (un seul fichier)
+
+```bash
+npm run build:html   # produit dist/projet-nutrition.html (~600 Ko)
+```
+
+Toute l'application (HTML, CSS, JavaScript, polices) dans un seul fichier, à ouvrir par double-clic
+dans un navigateur, sans serveur ni connexion. Mêmes composants que la version Next.js ; la
+navigation passe par l'adresse (`#/plan`, `#/recettes/poulet-tikka`…) et les données sont
+sauvegardées dans le navigateur. Les photos de recettes, si présentes, doivent se trouver dans
+`images/recipes/` à côté du fichier.
+
 ## Vérifier
 
 ```bash
