@@ -23,7 +23,7 @@ function RecipeChoice({ recipe, onChoose }: { recipe: Recipe; onChoose: () => vo
       <button
         type="button"
         onClick={onChoose}
-        className="flex w-full items-center gap-3 rounded-2xl border-2 border-line bg-surface p-2 text-left transition hover:border-ink active:scale-[0.99]"
+        className="flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-2 text-left transition hover:border-ink active:scale-[0.99]"
       >
         <RecipeImage recipe={recipe} variant="thumb" className="size-16 shrink-0 rounded-xl" />
         <span className="min-w-0">
@@ -130,7 +130,7 @@ export function MealOptionsSheet({
                   onClose();
                 }}
                 className={cn(
-                  "min-h-12 rounded-2xl border-2 text-sm font-bold capitalize transition",
+                  "min-h-12 rounded-2xl border text-sm font-bold capitalize transition",
                   i === dayIndex ? "border-ink bg-ink text-paper" : "border-line bg-surface hover:border-ink",
                 )}
               >
@@ -155,7 +155,7 @@ export function MealOptionsSheet({
           </Button>
           <Link
             href={`/recettes/${recipe.id}?portions=${meal.servings}`}
-            className="inline-flex min-h-tap items-center justify-center rounded-full border-2 border-ink px-5 font-bold hover:bg-paper"
+            className="inline-flex min-h-tap items-center justify-center rounded-full border border-ink px-5 font-bold hover:bg-paper"
           >
             Voir la recette
           </Link>

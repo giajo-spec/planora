@@ -34,7 +34,11 @@ export const STORAGE_KEYS = {
 
 /** Adaptateur navigateur (localStorage), avec préfixe et version de schéma. */
 export class LocalStorageAdapter implements StorageAdapter {
-  constructor(private readonly prefix = "projet-nutrition:") {}
+  constructor(
+    private readonly prefix = "planora:",
+    /** Ancien préfixe (avant le renommage en PLANORA) : lu une fois puis migré. */
+    private readonly legacyPrefix = "projet-nutrition:",
+  ) {}
 
   private get storage(): Storage | null {
     try {
@@ -45,7 +49,14 @@ export class LocalStorageAdapter implements StorageAdapter {
   }
 
   async load<T>(key: string): Promise<T | null> {
-    const raw = this.storage?.getItem(this.prefix + key);
+    let raw = this.storage?.getItem(this.prefix + key);
+    if (!raw) {
+      raw = this.storage?.getItem(this.legacyPrefix + key);
+      if (raw) {
+        this.storage?.setItem(this.prefix + key, raw);
+        this.storage?.removeItem(this.legacyPrefix + key);
+      }
+    }
     if (!raw) return null;
     try {
       const envelope = JSON.parse(raw) as Envelope<T>;

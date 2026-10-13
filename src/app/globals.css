@@ -9,16 +9,17 @@
   }
   body {
     @apply bg-paper font-sans text-ink antialiased;
-    font-feature-settings: "ss01", "cv11";
+    font-feature-settings: "kern", "liga";
   }
   h1, h2, h3, h4 {
-    @apply font-display;
+    @apply font-display font-normal;
+    font-optical-sizing: auto;
   }
   :focus-visible {
-    @apply outline-none ring-4 ring-violet/60 ring-offset-2 ring-offset-paper;
+    @apply outline-none ring-4 ring-plum/60 ring-offset-2 ring-offset-paper;
   }
   ::selection {
-    @apply bg-lime text-ink;
+    @apply bg-gold text-ink;
   }
 }
 
@@ -34,7 +35,11 @@
     @apply rounded-card border border-line bg-surface shadow-card;
   }
   .eyebrow {
-    @apply text-xs font-bold uppercase tracking-[0.14em] text-ink-muted;
+    @apply text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-gold-deep;
+  }
+  /* Filet doré décoratif */
+  .rule-gold {
+    @apply h-px w-12 bg-gradient-to-r from-gold to-transparent;
   }
   .tap {
     @apply min-h-tap min-w-tap;

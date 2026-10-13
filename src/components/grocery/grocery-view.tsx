@@ -31,8 +31,8 @@ function CheckButton({ checked, onClick, label }: { checked: boolean; onClick: (
     >
       <span
         className={cn(
-          "flex size-8 items-center justify-center rounded-xl border-2 transition",
-          checked ? "animate-check-pop border-ink bg-lime" : "border-ink-muted bg-surface",
+          "flex size-8 items-center justify-center rounded-xl border transition",
+          checked ? "animate-check-pop border-ink bg-ink text-gold-light" : "border-ink-muted bg-surface",
         )}
       >
         {checked && <Check aria-hidden className="size-5" />}
@@ -58,7 +58,7 @@ function GroceryRow({ item }: { item: GroceryItemView }) {
           {recipeNames.length === 1 ? recipeNames[0] : `${recipeNames.length} recettes`}
         </p>
         {item.changedSinceCheck && (
-          <p className="mt-0.5 text-xs font-bold text-tomato-deep">Quantité modifiée depuis l&apos;achat — vérifiez</p>
+          <p className="mt-0.5 text-xs font-bold text-terra-deep">Quantité modifiée depuis l&apos;achat — vérifiez</p>
         )}
       </div>
       <IconButton
@@ -134,12 +134,12 @@ export function GroceryView() {
           <div className="mb-2 flex items-baseline justify-between">
             <p className="font-bold">Progression</p>
             <p className="text-sm font-bold">
-              <span className="font-display text-2xl font-extrabold">{view.done}</span>
+              <span className="font-display text-2xl font-semibold">{view.done}</span>
               <span className="text-ink-muted"> / {view.total} articles</span>
             </p>
           </div>
           <ProgressBar value={view.done} max={view.total} label="Articles achetés" />
-          {view.total > 0 && view.done === view.total && <p className="mt-2 font-bold text-mint-deep">Tout est acheté. Bravo !</p>}
+          {view.total > 0 && view.done === view.total && <p className="mt-2 font-bold text-sage-deep">Tout est acheté. Bravo !</p>}
         </div>
       )}
 
@@ -157,15 +157,15 @@ export function GroceryView() {
       >
         <label className="col-span-2 sm:col-span-1">
           <span className="sr-only">Article à ajouter</span>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ajouter un article (ex. : papier parchemin)" className="min-h-12 w-full rounded-2xl border-2 border-line bg-paper px-4 font-semibold outline-none focus:border-ink" />
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ajouter un article (ex. : papier parchemin)" className="min-h-12 w-full rounded-2xl border border-line bg-paper px-4 font-semibold outline-none focus:border-ink" />
         </label>
         <label>
           <span className="sr-only">Quantité</span>
-          <input value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="Qté" className="min-h-12 w-full rounded-2xl border-2 border-line bg-paper px-4 font-semibold outline-none focus:border-ink" />
+          <input value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="Qté" className="min-h-12 w-full rounded-2xl border border-line bg-paper px-4 font-semibold outline-none focus:border-ink" />
         </label>
         <label>
           <span className="sr-only">Rayon</span>
-          <select value={aisle} onChange={(e) => setAisle(e.target.value as Aisle)} className="min-h-12 w-full rounded-2xl border-2 border-line bg-paper px-3 font-semibold outline-none focus:border-ink">
+          <select value={aisle} onChange={(e) => setAisle(e.target.value as Aisle)} className="min-h-12 w-full rounded-2xl border border-line bg-paper px-3 font-semibold outline-none focus:border-ink">
             {AISLE_ORDER.map((a) => (
               <option key={a} value={a}>
                 {AISLE_LABELS[a]}
@@ -194,7 +194,7 @@ export function GroceryView() {
         <div className="grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[repeat(2,minmax(0,1fr))] lg:items-start">
           {view.toBuy.map(({ aisle: a, items }) => (
             <section key={a} aria-labelledby={`rayon-${a}`} className="card p-3 sm:p-4">
-              <h2 id={`rayon-${a}`} className="mb-1 flex items-center justify-between px-2 text-lg font-extrabold">
+              <h2 id={`rayon-${a}`} className="mb-1 flex items-center justify-between px-2 text-lg font-semibold">
                 {AISLE_LABELS[a]}
                 <span className="rounded-full bg-paper-deep px-2.5 py-0.5 text-sm">
                   {items.filter((i) => i.checked).length}/{items.length}
@@ -210,7 +210,7 @@ export function GroceryView() {
 
           {manualByAisle.length > 0 && (
             <section aria-labelledby="ajouts" className="card p-3 sm:p-4">
-              <h2 id="ajouts" className="mb-1 px-2 text-lg font-extrabold">Mes ajouts</h2>
+              <h2 id="ajouts" className="mb-1 px-2 text-lg font-semibold">Mes ajouts</h2>
               <ul className="divide-y divide-line">
                 {manualByAisle.flatMap(({ items }) =>
                   items.map((m) => (
@@ -234,8 +234,8 @@ export function GroceryView() {
           )}
 
           {view.pantry.length > 0 && (
-            <section aria-labelledby="maison" className="rounded-card border-2 border-dashed border-line-strong p-3 sm:p-4">
-              <h2 id="maison" className="mb-1 flex items-center gap-2 px-2 text-lg font-extrabold">
+            <section aria-labelledby="maison" className="rounded-card border border-dashed border-line-strong p-3 sm:p-4">
+              <h2 id="maison" className="mb-1 flex items-center gap-2 px-2 text-lg font-semibold">
                 <Home aria-hidden className="size-5" /> Déjà à la maison
               </h2>
               <ul className="divide-y divide-line">
@@ -256,7 +256,7 @@ export function GroceryView() {
 
           {groceryState.extras.length > 0 && (
             <section aria-labelledby="extras" className="card p-4">
-              <h2 id="extras" className="mb-2 text-lg font-extrabold">Recettes ajoutées hors plan</h2>
+              <h2 id="extras" className="mb-2 text-lg font-semibold">Recettes ajoutées hors plan</h2>
               <ul className="flex flex-wrap gap-2">
                 {groceryState.extras.map((e) => (
                   <li key={e.recipeId} className="inline-flex items-center gap-1 rounded-full bg-paper-deep py-1 pl-4 pr-1 font-semibold">

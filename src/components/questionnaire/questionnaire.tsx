@@ -103,15 +103,15 @@ function OptionCard({
       aria-checked={selected}
       onClick={onSelect}
       className={cn(
-        "flex min-h-16 w-full items-center gap-4 rounded-2xl border-2 px-5 py-4 text-left transition active:scale-[0.99]",
-        selected ? "border-ink bg-lime shadow-pop" : "border-line bg-surface hover:border-ink",
+        "flex min-h-16 w-full items-center gap-4 rounded-2xl border px-5 py-4 text-left transition active:scale-[0.99]",
+        selected ? "border-gold bg-gold-soft shadow-gold" : "border-line bg-surface hover:border-ink",
       )}
     >
-      <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-full border-2 border-ink", selected && "bg-ink")}>
-        {selected && <Check aria-hidden className="size-4 text-lime" />}
+      <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-full border", selected ? "border-ink bg-ink" : "border-ink-muted")}>
+        {selected && <Check aria-hidden className="size-4 text-gold-light" />}
       </span>
       <span>
-        <span className="block text-lg font-extrabold">{title}</span>
+        <span className="block text-lg font-semibold">{title}</span>
         {description && <span className="block text-sm text-ink-soft">{description}</span>}
       </span>
     </button>
@@ -124,7 +124,7 @@ function Counter({ value, onChange, min, max, label }: { value: number; onChange
       <button type="button" aria-label={`Diminuer : ${label}`} disabled={value <= min} onClick={() => onChange(value - 1)} className="flex size-14 items-center justify-center rounded-full bg-ink text-paper transition active:scale-90 disabled:opacity-30">
         <Minus aria-hidden className="size-6" />
       </button>
-      <output aria-live="polite" className="min-w-16 text-center font-display text-5xl font-extrabold tabular-nums">
+      <output aria-live="polite" className="min-w-16 text-center font-display text-5xl font-semibold tabular-nums">
         {value}
       </output>
       <button type="button" aria-label={`Augmenter : ${label}`} disabled={value >= max} onClick={() => onChange(value + 1)} className="flex size-14 items-center justify-center rounded-full bg-ink text-paper transition active:scale-90 disabled:opacity-30">
@@ -136,7 +136,7 @@ function Counter({ value, onChange, min, max, label }: { value: number; onChange
 
 function NumberField({ label, unit, value, onChange }: { label: string; unit: string; value: number; onChange: (v: number) => void }) {
   return (
-    <label className="block rounded-2xl border-2 border-line bg-surface px-4 py-3 focus-within:border-ink">
+    <label className="block rounded-2xl border border-line bg-surface px-4 py-3 focus-within:border-ink">
       <span className="text-xs font-bold uppercase tracking-wider text-ink-muted">{label}</span>
       <span className="mt-1 flex items-baseline gap-1">
         <input
@@ -145,7 +145,7 @@ function NumberField({ label, unit, value, onChange }: { label: string; unit: st
           min={0}
           value={Number.isFinite(value) ? value : ""}
           onChange={(e) => onChange(Math.max(0, Number(e.target.value)))}
-          className="w-full bg-transparent font-display text-2xl font-extrabold tabular-nums outline-none"
+          className="w-full bg-transparent font-display text-2xl font-semibold tabular-nums outline-none"
         />
         <span className="font-bold text-ink-muted">{unit}</span>
       </span>
@@ -257,7 +257,7 @@ export function Questionnaire() {
                     maxLength={40}
                     onChange={(e) => set({ name: e.target.value })}
                     placeholder="Ex. : Camille"
-                    className="mt-2 block min-h-14 w-full rounded-2xl border-2 border-line bg-surface px-4 text-lg font-semibold outline-none focus:border-ink"
+                    className="mt-2 block min-h-14 w-full rounded-2xl border border-line bg-surface px-4 text-lg font-semibold outline-none focus:border-ink"
                   />
                 </label>
                 <div>
@@ -282,7 +282,7 @@ export function Questionnaire() {
                   <div className="flex flex-wrap gap-2">
                     {(Object.keys(ALLERGEN_LABELS) as Allergen[]).map((a) => (
                       <Chip key={a} selected={p.allergens.includes(a)} onClick={() => set({ allergens: toggle(p.allergens, a) })}>
-                        {p.allergens.includes(a) && <ShieldAlert aria-hidden className="size-4 text-tomato" />}
+                        {p.allergens.includes(a) && <ShieldAlert aria-hidden className="size-4 text-terra" />}
                         {ALLERGEN_LABELS[a]}
                       </Chip>
                     ))}
@@ -298,7 +298,7 @@ export function Questionnaire() {
                     ))}
                   </div>
                 </fieldset>
-                <p className="rounded-2xl bg-sun-soft p-4 text-sm text-ink">
+                <p className="rounded-2xl bg-amber-soft p-4 text-sm text-ink">
                   Les allergènes sont déduits de nos fiches d&apos;ingrédients. Vérifiez toujours l&apos;étiquette des produits que
                   vous achetez : les recettes peuvent varier selon les marques.
                 </p>
@@ -337,11 +337,11 @@ export function Questionnaire() {
                     aria-checked={p.timeBudget === t.value}
                     onClick={() => set({ timeBudget: t.value })}
                     className={cn(
-                      "flex min-h-24 flex-col items-start justify-between rounded-2xl border-2 p-4 text-left transition active:scale-[0.98]",
-                      p.timeBudget === t.value ? "border-ink bg-lime shadow-pop" : "border-line bg-surface hover:border-ink",
+                      "flex min-h-24 flex-col items-start justify-between rounded-2xl border p-4 text-left transition active:scale-[0.98]",
+                      p.timeBudget === t.value ? "border-gold bg-gold-soft shadow-gold" : "border-line bg-surface hover:border-ink",
                     )}
                   >
-                    <span className="font-display text-2xl font-extrabold">{t.label}</span>
+                    <span className="font-display text-2xl font-semibold">{t.label}</span>
                     <span className="text-sm font-semibold text-ink-soft">{t.hint}</span>
                   </button>
                 ))}
@@ -369,13 +369,13 @@ export function Questionnaire() {
                       aria-pressed={p.meals.includes(m)}
                       onClick={() => set({ meals: toggle(p.meals, m) })}
                       className={cn(
-                        "flex min-h-20 items-center justify-between rounded-2xl border-2 px-4 text-left text-lg font-extrabold transition active:scale-[0.98]",
-                        p.meals.includes(m) ? "border-ink bg-lime shadow-pop" : "border-line bg-surface hover:border-ink",
+                        "flex min-h-20 items-center justify-between rounded-2xl border px-4 text-left text-lg font-semibold transition active:scale-[0.98]",
+                        p.meals.includes(m) ? "border-gold bg-gold-soft shadow-gold" : "border-line bg-surface hover:border-ink",
                       )}
                     >
                       {m === "collation" ? "Collations" : MEAL_LABELS[m]}
-                      <span className={cn("flex size-6 items-center justify-center rounded-md border-2 border-ink", p.meals.includes(m) && "bg-ink")}>
-                        {p.meals.includes(m) && <Check aria-hidden className="size-4 text-lime" />}
+                      <span className={cn("flex size-6 items-center justify-center rounded-md border border-ink", p.meals.includes(m) && "bg-ink")}>
+                        {p.meals.includes(m) && <Check aria-hidden className="size-4 text-gold" />}
                       </span>
                     </button>
                   ))}
@@ -386,7 +386,7 @@ export function Questionnaire() {
                     <Counter value={p.snacksPerDay} onChange={(v) => set({ snacksPerDay: v })} min={1} max={3} label="Collations par jour" />
                   </div>
                 )}
-                {p.meals.length === 0 && <p className="font-semibold text-tomato-deep">Choisissez au moins un repas.</p>}
+                {p.meals.length === 0 && <p className="font-semibold text-terra-deep">Choisissez au moins un repas.</p>}
               </div>
             )}
 
@@ -438,7 +438,7 @@ export function Questionnaire() {
       <footer className="fixed inset-x-0 bottom-0 border-t border-line bg-surface/95 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4">
           <p className="hidden flex-1 text-sm font-semibold text-ink-muted sm:block" aria-live="polite">
-            <span className="font-display text-lg font-extrabold text-ink">{compatibleCount}</span> recettes compatibles
+            <span className="font-display text-lg font-semibold text-ink">{compatibleCount}</span> recettes compatibles
           </p>
           {isLast ? (
             <Button size="lg" className="flex-1 sm:flex-none" onClick={finish}>

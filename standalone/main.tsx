@@ -60,7 +60,7 @@ function App() {
   const { pathname } = splitRoute(route);
   const { element, title } = resolve(pathname);
   const pageTitle = title ?? TITLES[pathname];
-  if (typeof document !== "undefined") document.title = pageTitle ? `${pageTitle} · Projet Nutrition` : "Projet Nutrition — vos repas de la semaine, réglés";
+  if (typeof document !== "undefined") document.title = pageTitle ? `${pageTitle} · PLANORA` : "PLANORA — vos repas de la semaine, réglés";
   // key = route complète : chaque navigation remonte la page (paramètres ?portions=, ?jour=…).
   return <Suspense key={route}>{element}</Suspense>;
 }

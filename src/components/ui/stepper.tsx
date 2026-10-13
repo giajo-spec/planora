@@ -23,11 +23,11 @@ export function ServingsStepper({
     size === "lg" ? "size-12" : "size-11",
   );
   return (
-    <div role="group" aria-label={label} className={cn("inline-flex items-center gap-1 rounded-full border-2 border-ink bg-surface p-1", className)}>
+    <div role="group" aria-label={label} className={cn("inline-flex items-center gap-1 rounded-full border border-ink bg-surface p-1", className)}>
       <button type="button" className={btn} aria-label={`Retirer une portion (${label})`} disabled={value <= 0.5} onClick={() => onChange(nextServings(value, -1))}>
         <Minus aria-hidden className="size-5" />
       </button>
-      <output aria-live="polite" className={cn("min-w-[4.5rem] text-center font-display font-extrabold tabular-nums", size === "lg" ? "text-2xl" : "text-lg")}>
+      <output aria-live="polite" className={cn("min-w-[4.5rem] text-center font-display font-semibold tabular-nums", size === "lg" ? "text-2xl" : "text-lg")}>
         {formatAmount(value)}
         <span className="sr-only"> portions</span>
       </output>

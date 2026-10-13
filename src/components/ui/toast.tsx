@@ -30,7 +30,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       >
         {message && (
           <div key={message.id} className="flex animate-slide-up items-center gap-2 rounded-full bg-ink px-5 py-3 font-semibold text-paper shadow-card">
-            <CheckCircle2 aria-hidden className="size-5 text-lime" />
+            <CheckCircle2 aria-hidden className="size-5 text-gold" />
             {message.text}
           </div>
         )}

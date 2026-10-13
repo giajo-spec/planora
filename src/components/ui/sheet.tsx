@@ -59,7 +59,7 @@ export function Sheet({
         <div className="flex max-h-[88dvh] flex-col">
           <div className="flex items-start justify-between gap-3 border-b border-line px-5 pb-3 pt-5">
             <div>
-              <h2 id={titleId} className="text-xl font-extrabold">
+              <h2 id={titleId} className="text-xl font-semibold">
                 {title}
               </h2>
               {description && <p className="mt-1 text-sm text-ink-muted">{description}</p>}

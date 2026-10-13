@@ -7,17 +7,17 @@ export function Badge({
   className,
 }: {
   children: React.ReactNode;
-  tone?: "neutral" | "lime" | "tomato" | "violet" | "mint" | "sky" | "sun" | "dark" | "danger";
+  tone?: "neutral" | "gold" | "terra" | "plum" | "sage" | "slate" | "amber" | "dark" | "danger";
   className?: string;
 }) {
   const tones = {
     neutral: "bg-paper-deep text-ink",
-    lime: "bg-lime text-ink",
-    tomato: "bg-tomato-soft text-tomato-deep",
-    violet: "bg-violet-soft text-violet-deep",
-    mint: "bg-mint-soft text-mint-deep",
-    sky: "bg-sky-soft text-sky-deep",
-    sun: "bg-sun-soft text-sun-deep",
+    gold: "bg-gold text-ink",
+    terra: "bg-terra-soft text-terra-deep",
+    plum: "bg-plum-soft text-plum-deep",
+    sage: "bg-sage-soft text-sage-deep",
+    slate: "bg-slate-soft text-slate-deep",
+    amber: "bg-amber-soft text-amber-deep",
     dark: "bg-ink text-paper",
     danger: "bg-danger-soft text-danger",
   };
@@ -45,7 +45,7 @@ export function Chip({
       aria-pressed={selected}
       onClick={onClick}
       className={cn(
-        "inline-flex min-h-tap items-center gap-2 whitespace-nowrap rounded-full border-2 px-4 text-sm font-semibold transition active:scale-[0.97]",
+        "inline-flex min-h-tap items-center gap-2 whitespace-nowrap rounded-full border px-4 text-sm font-semibold transition active:scale-[0.97]",
         selected ? "border-ink bg-ink text-paper" : "border-line bg-surface text-ink hover:border-ink",
         className,
       )}
@@ -60,17 +60,17 @@ export function ProgressBar({
   value,
   max = 100,
   label,
-  tone = "lime",
+  tone = "gold",
   className,
 }: {
   value: number;
   max?: number;
   label: string;
-  tone?: "lime" | "violet" | "sky" | "sun" | "tomato" | "mint";
+  tone?: "gold" | "plum" | "slate" | "amber" | "terra" | "sage";
   className?: string;
 }) {
   const pct = max > 0 ? Math.min(100, Math.max(0, (value / max) * 100)) : 0;
-  const tones = { lime: "bg-lime", violet: "bg-violet", sky: "bg-sky", sun: "bg-sun", tomato: "bg-tomato", mint: "bg-mint" };
+  const tones = { gold: "bg-gold", plum: "bg-plum", slate: "bg-slate", amber: "bg-amber", terra: "bg-terra", sage: "bg-sage" };
   return (
     <div
       role="progressbar"
@@ -102,7 +102,7 @@ export function SectionHeader({
     <div className={cn("mb-4 flex items-end justify-between gap-4", className)}>
       <div>
         {eyebrow && <p className="eyebrow mb-1">{eyebrow}</p>}
-        <As className={cn("font-display font-extrabold tracking-tight", As === "h1" ? "text-display-lg" : "text-2xl")}>{title}</As>
+        <As className={cn("font-display font-semibold tracking-tight", As === "h1" ? "text-display-lg" : "text-2xl")}>{title}</As>
       </div>
       {action}
     </div>
@@ -135,8 +135,8 @@ export function EmptyState({
 }) {
   return (
     <div className="card flex flex-col items-center gap-3 px-6 py-10 text-center">
-      {icon && <div className="flex size-14 items-center justify-center rounded-full bg-lime text-ink">{icon}</div>}
-      <h2 className="text-xl font-extrabold">{title}</h2>
+      {icon && <div className="flex size-14 items-center justify-center rounded-full border border-gold bg-gold-soft text-gold-deep">{icon}</div>}
+      <h2 className="text-xl font-semibold">{title}</h2>
       {children && <div className="max-w-md text-ink-muted">{children}</div>}
       {action && <div className="mt-2">{action}</div>}
     </div>

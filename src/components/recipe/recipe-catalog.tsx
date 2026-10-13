@@ -105,7 +105,7 @@ export function RecipeCatalog() {
               value={filters.query}
               onChange={(e) => set({ query: e.target.value })}
               placeholder="Poulet, thaï, lentilles…"
-              className="min-h-12 w-full rounded-full border-2 border-line bg-surface pl-12 pr-4 font-semibold outline-none focus:border-ink"
+              className="min-h-12 w-full rounded-full border border-line bg-surface pl-12 pr-4 font-semibold outline-none focus:border-ink"
             />
           </label>
           <Button variant="secondary" className="lg:hidden" onClick={() => setSheetOpen(true)} aria-label={`Filtres${count ? ` (${count} actifs)` : ""}`}>
@@ -141,7 +141,7 @@ export function RecipeCatalog() {
           <p className="mb-3 text-sm font-semibold text-ink-muted" aria-live="polite">
             {results.length} recette{results.length > 1 ? "s" : ""}
             {hiddenBySafety > 0 && (
-              <span className="ml-2 inline-flex items-center gap-1 text-mint-deep">
+              <span className="ml-2 inline-flex items-center gap-1 text-sage-deep">
                 <ShieldCheck aria-hidden className="size-4" /> {hiddenBySafety} masquée{hiddenBySafety > 1 ? "s" : ""} selon vos allergies et votre régime
               </span>
             )}

@@ -123,21 +123,21 @@ function PlanContent({ profile, plan }: { profile: Profile; plan: MealPlan | nul
                 aria-controls="jour-panneau"
                 onClick={() => setSelected(i)}
                 className={cn(
-                  "flex min-h-[4.5rem] min-w-[3.6rem] shrink-0 flex-col items-center justify-center rounded-2xl border-2 transition",
+                  "flex min-h-[4.5rem] min-w-[3.6rem] shrink-0 flex-col items-center justify-center rounded-2xl border transition",
                   active ? "border-ink bg-ink text-paper" : "border-line bg-surface",
                 )}
               >
-                <span className={cn("text-xs font-bold capitalize", active ? "text-lime" : "text-ink-muted")}>{weekdayShort(d.date)}</span>
-                <span className="font-display text-xl font-extrabold">{dayOfMonth(d.date)}</span>
-                {isToday && <span className={cn("mt-0.5 size-1.5 rounded-full", active ? "bg-lime" : "bg-tomato")} aria-label="aujourd'hui" />}
+                <span className={cn("text-xs font-bold capitalize", active ? "text-gold" : "text-ink-muted")}>{weekdayShort(d.date)}</span>
+                <span className="font-display text-xl font-semibold">{dayOfMonth(d.date)}</span>
+                {isToday && <span className={cn("mt-0.5 size-1.5 rounded-full", active ? "bg-gold" : "bg-terra")} aria-label="aujourd'hui" />}
               </button>
             );
           })}
         </div>
 
         <section id="jour-panneau" role="tabpanel" aria-label={weekdayLabel(day.date)} className="mt-4 space-y-3">
-          <h2 className="text-2xl font-extrabold">
-            {weekdayLabel(day.date)} {day.date === today && <span className="ml-1 rounded-full bg-tomato px-2 py-0.5 align-middle text-xs font-bold">Aujourd&apos;hui</span>}
+          <h2 className="text-2xl font-semibold">
+            {weekdayLabel(day.date)} {day.date === today && <span className="ml-1 rounded-full bg-terra px-2 py-0.5 text-paper align-middle text-xs font-bold">Aujourd&apos;hui</span>}
           </h2>
           {day.meals.map((meal) => (
             <MealCard key={meal.id} meal={meal} dayIndex={dayIndex} />
@@ -159,7 +159,7 @@ function PlanContent({ profile, plan }: { profile: Profile; plan: MealPlan | nul
               <tr>
                 <th scope="col" className="w-28" />
                 {columns.map((slot) => (
-                  <th key={slot} scope="col" className="text-left text-xs font-extrabold uppercase tracking-wider text-ink-muted">
+                  <th key={slot} scope="col" className="text-left text-xs font-semibold uppercase tracking-wider text-ink-muted">
                     {slot === "collation" ? "Collations" : MEAL_LABELS[slot]}
                   </th>
                 ))}
@@ -170,8 +170,8 @@ function PlanContent({ profile, plan }: { profile: Profile; plan: MealPlan | nul
                 <tr key={d.date}>
                   <th scope="row" className="align-top">
                     <div className={cn("rounded-2xl p-3 text-left", d.date === today ? "bg-ink text-paper" : "bg-surface")}>
-                      <p className={cn("text-xs font-bold capitalize", d.date === today ? "text-lime" : "text-ink-muted")}>{weekdayShort(d.date)}</p>
-                      <p className="font-display text-2xl font-extrabold">{dayOfMonth(d.date)}</p>
+                      <p className={cn("text-xs font-bold capitalize", d.date === today ? "text-gold" : "text-ink-muted")}>{weekdayShort(d.date)}</p>
+                      <p className="font-display text-2xl font-semibold">{dayOfMonth(d.date)}</p>
                       <button
                         type="button"
                         onClick={() => setAddFor({ dayIndex: i, slot: "collation" })}
@@ -210,7 +210,7 @@ function PlanContent({ profile, plan }: { profile: Profile; plan: MealPlan | nul
                             <button
                               type="button"
                               onClick={() => setAddFor({ dayIndex: i, slot })}
-                              className="flex min-h-24 w-full items-center justify-center gap-1 rounded-3xl border-2 border-dashed border-line-strong text-sm font-bold text-ink-muted hover:border-ink hover:text-ink"
+                              className="flex min-h-24 w-full items-center justify-center gap-1 rounded-3xl border border-dashed border-line-strong text-sm font-bold text-ink-muted hover:border-ink hover:text-ink"
                             >
                               <Plus aria-hidden className="size-4" /> Ajouter
                             </button>
@@ -231,7 +231,7 @@ function PlanContent({ profile, plan }: { profile: Profile; plan: MealPlan | nul
               id="jour-resume"
               value={dayIndex}
               onChange={(e) => setSelected(Number(e.target.value))}
-              className="mb-3 min-h-tap rounded-full border-2 border-ink bg-surface px-4 font-bold"
+              className="mb-3 min-h-tap rounded-full border border-ink bg-surface px-4 font-bold"
             >
               {plan.days.map((d, i) => (
                 <option key={d.date} value={i}>
@@ -284,7 +284,7 @@ function PlanContent({ profile, plan }: { profile: Profile; plan: MealPlan | nul
 function MissingNotice({ slots }: { slots: string[] }) {
   if (slots.length === 0) return null;
   return (
-    <p className="flex items-start gap-2 rounded-2xl bg-sun-soft p-3 text-sm font-semibold">
+    <p className="flex items-start gap-2 rounded-2xl bg-amber-soft p-3 text-sm font-semibold">
       <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
       Aucune recette compatible avec votre profil pour : {slots.map((s) => MEAL_LABELS[s as MealType].toLowerCase()).join(", ")}.
     </p>

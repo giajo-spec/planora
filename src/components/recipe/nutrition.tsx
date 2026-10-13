@@ -3,9 +3,9 @@ import { roundNutrition } from "@/lib/nutrition/nutrition";
 import { cn } from "@/lib/utils/cn";
 
 const MACROS = [
-  { key: "protein", label: "Protéines", short: "P", color: "bg-violet", text: "text-violet-deep" },
-  { key: "carbs", label: "Glucides", short: "G", color: "bg-sky", text: "text-sky-deep" },
-  { key: "fat", label: "Lipides", short: "L", color: "bg-sun", text: "text-sun-deep" },
+  { key: "protein", label: "Protéines", short: "P", color: "bg-plum", text: "text-plum-deep" },
+  { key: "carbs", label: "Glucides", short: "G", color: "bg-slate", text: "text-slate-deep" },
+  { key: "fat", label: "Lipides", short: "L", color: "bg-amber", text: "text-amber-deep" },
 ] as const;
 
 /** Grille calories + macros (valeurs arrondies). */
@@ -15,12 +15,12 @@ export function NutritionGrid({ nutrition, className }: { nutrition: Nutrition; 
     <dl className={cn("grid grid-cols-2 gap-2", className)}>
       <div className="rounded-2xl bg-ink px-2 py-3 text-center text-paper">
         <dt className="text-[0.7rem] font-bold uppercase tracking-wider text-paper/75">Calories</dt>
-        <dd className="font-display text-xl font-extrabold tabular-nums">{n.kcal}</dd>
+        <dd className="font-display text-xl font-semibold tabular-nums">{n.kcal}</dd>
       </div>
       {MACROS.map((m) => (
         <div key={m.key} className="rounded-2xl bg-paper px-2 py-3 text-center">
           <dt className={cn("text-[0.7rem] font-bold uppercase tracking-wider", m.text)}>{m.label}</dt>
-          <dd className="font-display text-xl font-extrabold tabular-nums">
+          <dd className="font-display text-xl font-semibold tabular-nums">
             {n[m.key]}
             <span className="text-sm font-bold"> g</span>
           </dd>
@@ -60,7 +60,7 @@ export function TargetRing({
   target,
   label,
   unit,
-  color = "#C6F432",
+  color = "#C6A46C",
   size = 96,
 }: {
   value: number;
@@ -93,7 +93,7 @@ export function TargetRing({
           />
         </svg>
         <div aria-hidden className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-display text-lg font-extrabold leading-none tabular-nums">{Math.round(value)}</span>
+          <span className="font-display text-lg font-semibold leading-none tabular-nums">{Math.round(value)}</span>
           <span className="text-[0.65rem] font-bold text-ink-muted">
             / {target} {unit}
           </span>

@@ -2,26 +2,26 @@ import Link from "next/link";
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils/cn";
 
-type Variant = "primary" | "dark" | "secondary" | "ghost" | "tomato" | "danger";
+type Variant = "primary" | "gold" | "dark" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg" | "xl";
 
 const base =
-  "inline-flex select-none items-center justify-center gap-2 rounded-full font-bold transition-[transform,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:shrink-0";
+  "inline-flex select-none items-center justify-center gap-2 rounded-full font-semibold tracking-[0.01em] transition-[transform,box-shadow,background-color,color] duration-200 disabled:cursor-not-allowed disabled:opacity-45 [&_svg]:shrink-0";
 
 const variants: Record<Variant, string> = {
-  primary: "border-2 border-ink bg-lime text-ink shadow-pop hover:bg-[#d4fb55] active:translate-y-[3px] active:shadow-none",
-  tomato: "border-2 border-ink bg-tomato text-ink shadow-pop hover:bg-[#ff6d44] active:translate-y-[3px] active:shadow-none",
-  dark: "bg-ink text-paper hover:bg-ink-soft active:scale-[0.98]",
-  secondary: "border-2 border-ink bg-surface text-ink hover:bg-paper active:scale-[0.98]",
-  ghost: "text-ink hover:bg-ink/[0.06] active:bg-ink/10",
-  danger: "bg-danger text-white hover:brightness-110 active:scale-[0.98]",
+  primary: "bg-ink text-paper shadow-pop hover:bg-ink-soft active:scale-[0.985]",
+  gold: "bg-gold text-ink shadow-gold hover:bg-gold-light active:scale-[0.985]",
+  dark: "bg-ink-soft text-paper hover:bg-ink active:scale-[0.985]",
+  secondary: "border border-ink/80 bg-transparent text-ink hover:bg-ink hover:text-paper active:scale-[0.985]",
+  ghost: "text-ink hover:bg-ink/[0.05] active:bg-ink/10",
+  danger: "bg-danger text-white hover:brightness-110 active:scale-[0.985]",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "min-h-tap px-4 text-sm",
-  md: "min-h-tap px-5 text-[0.95rem]",
-  lg: "min-h-14 px-6 text-lg",
-  xl: "min-h-16 px-8 text-xl",
+  sm: "min-h-tap px-5 text-sm",
+  md: "min-h-tap px-6 text-[0.95rem]",
+  lg: "min-h-14 px-7 text-base",
+  xl: "min-h-16 px-9 text-lg",
 };
 
 export interface ButtonStyleProps {
@@ -54,12 +54,12 @@ export function ButtonLink({
 /** Bouton icône carré (≥ 44 px) avec libellé accessible obligatoire. */
 export const IconButton = forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement> & { label: string; tone?: "light" | "dark" | "lime" | "plain" }
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { label: string; tone?: "light" | "dark" | "gold" | "plain" }
 >(function IconButton({ label, tone = "light", className, type = "button", children, ...props }, ref) {
   const tones = {
-    light: "bg-surface border border-line text-ink hover:border-ink",
+    light: "bg-surface border border-line text-ink hover:border-gold",
     dark: "bg-ink text-paper hover:bg-ink-soft",
-    lime: "bg-lime text-ink border-2 border-ink",
+    gold: "bg-gold text-ink",
     plain: "text-ink hover:bg-ink/[0.06]",
   };
   return (

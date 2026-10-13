@@ -65,9 +65,9 @@ function ProfileContent({ profile }: { profile: Profile }) {
         </ButtonLink>
       </header>
 
-      <section aria-labelledby="contraintes" className="rounded-card border-2 border-ink bg-surface p-5">
-        <h2 id="contraintes" className="flex items-center gap-2 text-xl font-extrabold">
-          <ShieldAlert aria-hidden className="size-5 text-tomato-deep" /> Contraintes strictes
+      <section aria-labelledby="contraintes" className="rounded-card border border-ink bg-surface p-5">
+        <h2 id="contraintes" className="flex items-center gap-2 text-xl font-semibold">
+          <ShieldAlert aria-hidden className="size-5 text-terra-deep" /> Contraintes strictes
         </h2>
         <p className="mt-1 text-sm text-ink-muted">Jamais enfreintes : ni dans le plan, ni dans les remplacements, ni dans les suggestions.</p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -76,14 +76,14 @@ function ProfileContent({ profile }: { profile: Profile }) {
             <Badge key={a} tone="danger">Allergie : {ALLERGEN_LABELS[a]}</Badge>
           ))}
           {profile.restrictions.map((r) => (
-            <Badge key={r} tone="sun">{RESTRICTION_LABELS[r]}</Badge>
+            <Badge key={r} tone="amber">{RESTRICTION_LABELS[r]}</Badge>
           ))}
           {profile.allergens.length === 0 && profile.restrictions.length === 0 && <span className="text-sm font-semibold">Aucune allergie déclarée.</span>}
         </div>
       </section>
 
       <section aria-labelledby="details" className="card p-5">
-        <h2 id="details" className="text-xl font-extrabold">Préférences</h2>
+        <h2 id="details" className="text-xl font-semibold">Préférences</h2>
         <dl className="mt-2 divide-y divide-line">
           <Row label="Foyer">{profile.householdSize} personne{profile.householdSize > 1 ? "s" : ""}</Row>
           <Row label="Aime">{ingredientNames(profile.likedIngredients)}</Row>
@@ -106,7 +106,7 @@ function ProfileContent({ profile }: { profile: Profile }) {
       </section>
 
       <section aria-labelledby="donnees" className="card p-5">
-        <h2 id="donnees" className="text-xl font-extrabold">Vos données</h2>
+        <h2 id="donnees" className="text-xl font-semibold">Vos données</h2>
         <p className="mt-2 text-ink-soft">
           Profil, menu, verrous, portions et liste d&apos;épicerie sont enregistrés uniquement dans ce navigateur. Aucun compte,
           aucun envoi à un serveur.
@@ -117,7 +117,7 @@ function ProfileContent({ profile }: { profile: Profile }) {
       </section>
 
       <section aria-labelledby="bientot">
-        <h2 id="bientot" className="text-xl font-extrabold">Bientôt dans Projet Nutrition</h2>
+        <h2 id="bientot" className="text-xl font-semibold">Bientôt dans PLANORA</h2>
         <p className="mt-1 text-sm text-ink-muted">Ces fonctions ne sont pas encore offertes — rien n&apos;est simulé.</p>
         <ul className="mt-3 grid gap-3 sm:grid-cols-2">
           {FUTURE.map(({ icon: Icon, title, text }) => (

@@ -117,7 +117,7 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
 
       {/* Minuteries actives */}
       {timers.length > 0 && (
-        <div className={cn("sticky top-[3.75rem] z-20 border-b border-line", ringing.length ? "bg-tomato" : "bg-ink text-paper")}>
+        <div className={cn("sticky top-[3.75rem] z-20 border-b border-line", ringing.length ? "bg-terra text-paper" : "bg-ink text-paper")}>
           <div className="mx-auto max-w-3xl px-4 py-2">
             <button
               type="button"
@@ -125,7 +125,7 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
               onClick={() => setTimersOpen((v) => !v)}
               className="flex min-h-tap w-full items-center gap-2 text-left font-bold"
             >
-              {ringing.length ? <BellRing aria-hidden className="size-5 animate-wiggle" /> : <Timer aria-hidden className="size-5 text-lime" />}
+              {ringing.length ? <BellRing aria-hidden className="size-5 animate-wiggle" /> : <Timer aria-hidden className="size-5 text-gold" />}
               <span className="flex-1 truncate" aria-live="polite">
                 {ringing.length
                   ? `Terminé : ${ringing.map((t) => t.label).join(", ")}`
@@ -152,7 +152,7 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
                     >
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-bold">{t.label}</span>
-                        <span className="font-display text-2xl font-extrabold tabular-nums">{t.finished ? "Terminé !" : formatClock(remaining)}</span>
+                        <span className="font-display text-2xl font-semibold tabular-nums">{t.finished ? "Terminé !" : formatClock(remaining)}</span>
                       </span>
                       {!t.finished && (
                         <IconButton label={paused ? `Reprendre ${t.label}` : `Mettre en pause ${t.label}`} onClick={() => (paused ? resume(t.id) : pause(t.id))}>
@@ -160,7 +160,7 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
                         </IconButton>
                       )}
                       <IconButton label={`Ajouter 1 minute à ${t.label}`} onClick={() => addTime(t.id, 60)}>
-                        <span className="text-xs font-extrabold">+1</span>
+                        <span className="text-xs font-semibold">+1</span>
                       </IconButton>
                       <IconButton label={t.finished ? `Arrêter l'alarme ${t.label}` : `Supprimer ${t.label}`} tone={t.finished ? "dark" : "light"} onClick={() => remove(t.id)}>
                         {t.finished ? <Check aria-hidden className="size-5" /> : <X aria-hidden className="size-5" />}
@@ -199,15 +199,15 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
                     aria-checked={!!checkedPrep[i]}
                     onClick={() => setCheckedPrep((c) => ({ ...c, [i]: !c[i] }))}
                     className={cn(
-                      "flex min-h-16 w-full items-center gap-4 rounded-2xl border-2 px-4 py-3 text-left text-lg transition",
-                      checkedPrep[i] ? "border-mint-deep bg-mint-soft" : "border-line bg-surface hover:border-ink",
+                      "flex min-h-16 w-full items-center gap-4 rounded-2xl border px-4 py-3 text-left text-lg transition",
+                      checkedPrep[i] ? "border-sage-deep bg-sage-soft" : "border-line bg-surface hover:border-ink",
                     )}
                   >
-                    <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg border-2", checkedPrep[i] ? "animate-check-pop border-mint-deep bg-mint" : "border-ink")}>
+                    <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg border", checkedPrep[i] ? "animate-check-pop border-sage-deep bg-sage" : "border-ink")}>
                       {checkedPrep[i] && <Check aria-hidden className="size-5" />}
                     </span>
                     <span className={cn(checkedPrep[i] && "line-through decoration-2 opacity-70")}>
-                      <span className="font-display font-extrabold">{l.quantityText}</span> {l.name}
+                      <span className="font-display font-semibold">{l.quantityText}</span> {l.name}
                       {l.note && <span className="text-ink-muted">, {l.note}</span>}
                     </span>
                   </button>
@@ -226,7 +226,7 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
             <p className="eyebrow">
               Étape {step + 1} sur {total}
               {current.minutes != null && (
-                <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-sun-soft px-2 py-0.5 normal-case tracking-normal text-sun-deep">
+                <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-amber-soft px-2 py-0.5 normal-case tracking-normal text-amber-deep">
                   <Clock aria-hidden className="size-3" /> environ {formatMinutes(current.minutes)}
                 </span>
               )}
@@ -238,11 +238,11 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
 
             {stepIngredients(recipe, step, factor).length > 0 && (
               <div className="mt-6">
-                <h2 className="mb-2 text-sm font-extrabold uppercase tracking-wider text-ink-muted">Pour cette étape</h2>
+                <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider text-ink-muted">Pour cette étape</h2>
                 <ul className="flex flex-wrap gap-2">
                   {stepIngredients(recipe, step, factor).map((l) => (
-                    <li key={l.ingredientId} className="rounded-2xl border-2 border-ink bg-surface px-3 py-2 text-lg">
-                      <span className="font-display font-extrabold">{l.quantityText}</span> {l.name}
+                    <li key={l.ingredientId} className="rounded-2xl border border-ink bg-surface px-3 py-2 text-lg">
+                      <span className="font-display font-semibold">{l.quantityText}</span> {l.name}
                       {l.partial && <span className="text-sm text-ink-muted"> (une partie)</span>}
                     </li>
                   ))}
@@ -253,7 +253,7 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
             {current.timers && current.timers.length > 0 && (
               <div className="mt-6 flex flex-wrap gap-2">
                 {current.timers.map((t) => (
-                  <Button key={t.label} variant="tomato" size="lg" onClick={() => start(t.label, t.seconds)}>
+                  <Button key={t.label} variant="gold" size="lg" onClick={() => start(t.label, t.seconds)}>
                     <Timer aria-hidden className="size-5" /> {t.label} · {formatClock(t.seconds * 1000)}
                   </Button>
                 ))}
@@ -261,10 +261,10 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
             )}
 
             {current.tip && (
-              <aside className="mt-6 flex gap-3 rounded-3xl bg-lime-soft p-4">
+              <aside className="mt-6 flex gap-3 rounded-3xl bg-gold-soft p-4">
                 <Lightbulb aria-hidden className="mt-0.5 size-6 shrink-0" />
                 <p className="text-lg leading-snug">
-                  <span className="font-extrabold">Conseil débutant : </span>
+                  <span className="font-semibold">Conseil débutant : </span>
                   {current.tip}
                 </p>
               </aside>
@@ -276,7 +276,7 @@ export function CookingMode({ recipeId }: { recipeId: string }) {
 
         {isDone && (
           <section aria-labelledby="fini" className="animate-pop-in py-6 text-center">
-            <div className="mx-auto flex size-24 items-center justify-center rounded-full border-2 border-ink bg-lime shadow-pop-lg">
+            <div className="mx-auto flex size-24 items-center justify-center rounded-full border border-gold bg-ink text-gold-light shadow-pop-lg">
               <Check aria-hidden className="size-12" />
             </div>
             <h1 id="fini" ref={headingRef} tabIndex={-1} className="mt-6 text-display-lg outline-none">
@@ -344,13 +344,13 @@ function StepQuestions({ recipe, stepIndex }: { recipe: Recipe; stepIndex: numbe
 
   return (
     <section aria-labelledby="faq" className="mt-8">
-      <h2 id="faq" className="flex items-center gap-2 text-xl font-extrabold">
+      <h2 id="faq" className="flex items-center gap-2 text-xl font-semibold">
         <MessageCircleQuestion aria-hidden className="size-5" /> Questions fréquentes
       </h2>
       {suggestions.length > 0 && (
         <ul className="mt-3 space-y-2">
           {suggestions.map((faq, i) => (
-            <li key={faq.question} className="overflow-hidden rounded-2xl border-2 border-line bg-surface">
+            <li key={faq.question} className="overflow-hidden rounded-2xl border border-line bg-surface">
               <button
                 type="button"
                 aria-expanded={openIndex === i}
@@ -379,7 +379,7 @@ function StepQuestions({ recipe, stepIndex }: { recipe: Recipe; stepIndex: numbe
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="Une autre question ? Ex. : comment savoir si c'est cuit"
-            className="min-h-12 w-full rounded-full border-2 border-line bg-surface px-4 font-semibold outline-none focus:border-ink"
+            className="min-h-12 w-full rounded-full border border-line bg-surface px-4 font-semibold outline-none focus:border-ink"
           />
         </label>
         <Button type="submit" variant="dark" aria-label="Chercher une réponse">
@@ -388,8 +388,8 @@ function StepQuestions({ recipe, stepIndex }: { recipe: Recipe; stepIndex: numbe
         </Button>
       </form>
       {answer && (
-        <div aria-live="polite" className={cn("mt-3 rounded-2xl p-4", answer.source === "aucune" ? "bg-paper-deep" : "bg-violet-soft")}>
-          {answer.matchedQuestion && <p className="text-sm font-bold text-violet-deep">{answer.matchedQuestion}</p>}
+        <div aria-live="polite" className={cn("mt-3 rounded-2xl p-4", answer.source === "aucune" ? "bg-paper-deep" : "bg-plum-soft")}>
+          {answer.matchedQuestion && <p className="text-sm font-bold text-plum-deep">{answer.matchedQuestion}</p>}
           <p className="mt-1 text-lg leading-snug">{answer.answer}</p>
           <p className="mt-2 text-xs text-ink-muted">Réponse prérédigée — l&apos;assistant ne génère pas de texte.</p>
         </div>

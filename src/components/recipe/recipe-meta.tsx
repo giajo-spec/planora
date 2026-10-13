@@ -17,29 +17,29 @@ export function RecipeBadges({ recipe, max = 3 }: { recipe: Recipe; max?: number
   const diet = recipeDietBadge(recipe);
   if (isHighProtein(recipe))
     badges.push(
-      <Badge key="hp" tone="violet">
+      <Badge key="hp" tone="plum">
         <Dumbbell aria-hidden className="size-3" /> Riche en protéines
       </Badge>,
     );
   if (diet === "vegetalien")
     badges.push(
-      <Badge key="vg" tone="mint">
+      <Badge key="vg" tone="sage">
         <Leaf aria-hidden className="size-3" /> Végétalien
       </Badge>,
     );
   else if (diet === "vegetarien")
     badges.push(
-      <Badge key="vt" tone="mint">
+      <Badge key="vt" tone="sage">
         <Leaf aria-hidden className="size-3" /> Végétarien
       </Badge>,
     );
   else if (diet === "pescetarien")
     badges.push(
-      <Badge key="pc" tone="sky">
+      <Badge key="pc" tone="slate">
         <Fish aria-hidden className="size-3" /> Pescétarien
       </Badge>,
     );
-  if (recipe.tags.includes("rapide")) badges.push(<Badge key="rp" tone="sun">Express</Badge>);
+  if (recipe.tags.includes("rapide")) badges.push(<Badge key="rp" tone="amber">Express</Badge>);
   return <div className="flex flex-wrap gap-1.5">{badges.slice(0, max)}</div>;
 }
 

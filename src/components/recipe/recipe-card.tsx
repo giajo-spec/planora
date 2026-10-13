@@ -16,10 +16,10 @@ export function RecipeCard({ recipe, className, warning }: { recipe: Recipe; cla
       <RecipeImage recipe={recipe} className="aspect-[4/3] w-full" />
       <div className="flex flex-1 flex-col gap-2 p-4">
         <RecipeBadges recipe={recipe} max={2} />
-        <h3 className="text-lg font-extrabold leading-tight group-hover:underline group-hover:decoration-lime group-hover:decoration-4 group-hover:underline-offset-4">
+        <h3 className="text-lg font-semibold leading-tight group-hover:underline group-hover:decoration-gold group-hover:decoration-4 group-hover:underline-offset-4">
           {recipe.name}
         </h3>
-        {warning && <p className="text-sm font-semibold text-tomato-deep">{warning}</p>}
+        {warning && <p className="text-sm font-semibold text-terra-deep">{warning}</p>}
         <div className="mt-auto">
           <RecipeQuickFacts recipe={recipe} />
         </div>

@@ -8,26 +8,26 @@ import { cn } from "@/lib/utils/cn";
 
 const PHOTOS = manifest as Record<string, string>;
 
-/** Couleurs du visuel de remplacement, par cuisine (cohérentes avec les jetons). */
-const CUISINE_STYLE: Record<string, { bg: string; fg: string; dot: string }> = {
-  Indienne: { bg: "bg-sun", fg: "text-ink", dot: "bg-tomato" },
-  "Moyen-orientale": { bg: "bg-tomato", fg: "text-ink", dot: "bg-sun" },
-  Méditerranéenne: { bg: "bg-sky", fg: "text-ink", dot: "bg-paper" },
-  Suisse: { bg: "bg-paper-deep", fg: "text-ink", dot: "bg-tomato" },
-  Mexicaine: { bg: "bg-mint", fg: "text-ink", dot: "bg-tomato" },
-  Marocaine: { bg: "bg-tomato-soft", fg: "text-ink", dot: "bg-tomato" },
-  Grecque: { bg: "bg-sky-soft", fg: "text-ink", dot: "bg-sky" },
-  Libanaise: { bg: "bg-lime", fg: "text-ink", dot: "bg-mint-deep" },
-  Italienne: { bg: "bg-tomato", fg: "text-ink", dot: "bg-lime" },
-  Hawaïenne: { bg: "bg-violet", fg: "text-paper", dot: "bg-lime" },
-  Japonaise: { bg: "bg-ink", fg: "text-paper", dot: "bg-tomato" },
-  Chinoise: { bg: "bg-sun-soft", fg: "text-ink", dot: "bg-tomato" },
-  Thaïlandaise: { bg: "bg-lime-soft", fg: "text-ink", dot: "bg-violet" },
-  Coréenne: { bg: "bg-violet-soft", fg: "text-ink", dot: "bg-tomato" },
-  "Nord-américaine": { bg: "bg-sun", fg: "text-ink", dot: "bg-violet" },
+/** Tons du visuel de remplacement, par cuisine : fonds feutrés, typographie profonde. */
+const CUISINE_STYLE: Record<string, { bg: string; fg: string }> = {
+  Indienne: { bg: "bg-amber-soft", fg: "text-amber-deep" },
+  "Moyen-orientale": { bg: "bg-terra-soft", fg: "text-terra-deep" },
+  Méditerranéenne: { bg: "bg-slate-soft", fg: "text-slate-deep" },
+  Suisse: { bg: "bg-paper-deep", fg: "text-ink-soft" },
+  Mexicaine: { bg: "bg-sage-soft", fg: "text-sage-deep" },
+  Marocaine: { bg: "bg-terra-soft", fg: "text-terra-deep" },
+  Grecque: { bg: "bg-slate-soft", fg: "text-slate-deep" },
+  Libanaise: { bg: "bg-sage-soft", fg: "text-sage-deep" },
+  Italienne: { bg: "bg-terra-soft", fg: "text-terra-deep" },
+  Hawaïenne: { bg: "bg-plum", fg: "text-gold-light" },
+  Japonaise: { bg: "bg-ink", fg: "text-gold-light" },
+  Chinoise: { bg: "bg-gold-soft", fg: "text-gold-deep" },
+  Thaïlandaise: { bg: "bg-sage", fg: "text-paper" },
+  Coréenne: { bg: "bg-plum-soft", fg: "text-plum-deep" },
+  "Nord-américaine": { bg: "bg-gold-soft", fg: "text-gold-deep" },
 };
 
-const DEFAULT_STYLE = { bg: "bg-lime", fg: "text-ink", dot: "bg-ink" };
+const DEFAULT_STYLE = { bg: "bg-gold-soft", fg: "text-gold-deep" };
 
 export function hasRecipePhoto(recipeId: string): boolean {
   return Boolean(PHOTOS[recipeId]);
@@ -65,23 +65,25 @@ export function RecipeImage({
   const word = recipe.name.split(/[\s,]+/)[0];
   return (
     <div role="img" aria-label={`Visuel : ${recipe.name}`} className={cn("relative overflow-hidden", style.bg, style.fg, className)}>
-      {/* Assiette stylisée */}
-      <div aria-hidden className="absolute -right-[12%] -top-[18%] aspect-square w-[70%] rounded-full border-[10px] border-current opacity-15" />
-      <div aria-hidden className={cn("absolute right-[14%] top-[16%] size-[14%] rounded-full", style.dot)} />
-      <div aria-hidden className="absolute right-[30%] top-[38%] size-[6%] rounded-full bg-current opacity-25" />
+      {/* Assiette stylisée : double filet doré */}
+      <div aria-hidden className="absolute -right-[14%] top-1/2 aspect-square h-[125%] -translate-y-1/2 rounded-full border border-gold/60" />
+      <div aria-hidden className="absolute -right-[2%] top-1/2 aspect-square h-[92%] -translate-y-1/2 rounded-full border border-gold/35" />
+      <div aria-hidden className="absolute right-[16%] top-1/2 aspect-square w-[5%] min-w-1.5 -translate-y-1/2 rounded-full bg-gold" />
       {variant !== "thumb" && (
-        <span className="absolute left-4 top-4 text-[0.7rem] font-bold uppercase tracking-[0.16em] opacity-80">
-          {recipe.cuisine}
-        </span>
+        <span className="absolute right-4 top-4 text-[0.62rem] font-semibold uppercase tracking-[0.28em] opacity-80">{recipe.cuisine}</span>
       )}
       <span
         aria-hidden
         className={cn(
-          "absolute -bottom-[0.12em] left-3 font-display font-extrabold leading-none tracking-tighter",
-          variant === "hero" ? "text-[clamp(4rem,16vw,9rem)]" : variant === "thumb" ? "text-3xl" : "text-[clamp(2.6rem,9vw,4rem)]",
+          "absolute font-display italic leading-none tracking-tight",
+          variant === "hero"
+            ? "bottom-[22%] left-5 text-[clamp(3.5rem,13vw,8rem)] sm:bottom-[18%] sm:left-10"
+            : variant === "thumb"
+              ? "bottom-1.5 left-2 text-2xl"
+              : "bottom-3 left-4 text-[clamp(2.4rem,8vw,3.5rem)]",
         )}
       >
-        {variant === "thumb" ? word.slice(0, 2) : word}
+        {variant === "thumb" ? word.charAt(0) : word}
       </span>
     </div>
   );

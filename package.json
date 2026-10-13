@@ -1,8 +1,8 @@
 {
-  "name": "projet-nutrition",
+  "name": "planora",
   "version": "0.1.0",
   "private": true,
-  "description": "Projet Nutrition — planification alimentaire intelligente (Next.js)",
+  "description": "PLANORA — planification alimentaire haut de gamme (Next.js)",
   "scripts": {
     "predev": "node scripts/generate-image-manifest.mjs",
     "dev": "next dev",
@@ -17,8 +17,8 @@
     "build:html": "node scripts/build-standalone.mjs"
   },
   "dependencies": {
-    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
-    "@fontsource-variable/dm-sans": "^5.3.0",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
     "lucide-react": "^0.460.0",
     "next": "15.5.27",
     "react": "19.1.1",

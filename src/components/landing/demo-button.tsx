@@ -8,12 +8,13 @@ import { useApp } from "@/lib/state/app-store";
  * « Découvrir l'application » : ouvre le tableau de bord avec un profil de
  * démonstration — sans jamais écraser un profil existant.
  */
-export function DemoButton({ children, ...style }: ButtonStyleProps & { children: React.ReactNode }) {
+export function DemoButton({ children, className, ...style }: ButtonStyleProps & { children: React.ReactNode; className?: string }) {
   const { hydrated, profile, startDemo } = useApp();
   const router = useRouter();
   return (
     <Button
       {...style}
+      className={className}
       disabled={!hydrated}
       onClick={() => {
         if (!profile) startDemo();

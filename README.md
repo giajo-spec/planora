@@ -1,4 +1,4 @@
-# Projet Nutrition
+# PLANORA
 
 Application web de planification alimentaire : questionnaire de profil, plan de 7 jours,
 catalogue de recettes internationales, liste d'épicerie intelligente, cuisine guidée pas à pas
@@ -25,7 +25,7 @@ npm run start        # http://localhost:3000
 ## Version HTML autonome (un seul fichier)
 
 ```bash
-npm run build:html   # produit dist/projet-nutrition.html (~600 Ko)
+npm run build:html   # produit dist/planora.html (~600 Ko)
 ```
 
 Toute l'application (HTML, CSS, JavaScript, polices) dans un seul fichier, à ouvrir par double-clic

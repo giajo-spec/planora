@@ -46,10 +46,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   active ? "bg-ink text-paper" : "text-ink-soft hover:bg-paper",
                 )}
               >
-                <Icon aria-hidden className={cn("size-5", active && "text-lime")} />
+                <Icon aria-hidden className={cn("size-5", active && "text-gold")} />
                 {label}
                 {href === "/epicerie" && remaining > 0 && (
-                  <span className="ml-auto rounded-full bg-lime px-2 py-0.5 text-xs font-extrabold text-ink">{remaining}</span>
+                  <span className="ml-auto rounded-full bg-gold px-2 py-0.5 text-xs font-semibold text-ink">{remaining}</span>
                 )}
               </Link>
             );
@@ -83,14 +83,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <span
                     className={cn(
                       "flex h-8 w-14 items-center justify-center rounded-full transition-colors",
-                      active ? "bg-ink text-lime" : "text-ink-muted",
+                      active ? "bg-ink text-gold" : "text-ink-muted",
                     )}
                   >
                     <Icon aria-hidden className="size-[1.35rem]" />
                   </span>
                   <span className={active ? "text-ink" : "text-ink-muted"}>{label}</span>
                   {href === "/epicerie" && remaining > 0 && (
-                    <span className="absolute right-[18%] top-1.5 min-w-5 rounded-full border-2 border-surface bg-tomato px-1 text-center text-[0.65rem] font-extrabold leading-4 text-ink">
+                    <span className="absolute right-[18%] top-1.5 min-w-5 rounded-full border border-surface bg-gold px-1 text-center text-[0.65rem] font-semibold leading-4 text-ink">
                       {remaining > 99 ? "99+" : remaining}
                     </span>
                   )}

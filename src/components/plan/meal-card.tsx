@@ -65,10 +65,10 @@ export function MealCard({
       }}
       aria-label={`${MEAL_LABELS[meal.slot]} : ${recipe.name}`}
       className={cn(
-        "group relative rounded-3xl border-2 bg-surface p-3 transition",
+        "group relative rounded-3xl border bg-surface p-3 transition",
         meal.locked ? "border-ink" : "border-transparent shadow-card",
         meal.done && "opacity-70",
-        dragOver && "border-dashed border-violet bg-violet-soft",
+        dragOver && "border-dashed border-plum bg-plum-soft",
         draggable && "cursor-grab active:cursor-grabbing",
       )}
     >
@@ -77,15 +77,15 @@ export function MealCard({
           <RecipeImage recipe={recipe} variant="thumb" className={cn("rounded-2xl", compact ? "size-16" : "size-20")} />
         </Link>
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1.5 text-[0.7rem] font-extrabold uppercase tracking-wider text-ink-muted">
+          <p className="flex items-center gap-1.5 text-[0.7rem] font-semibold uppercase tracking-wider text-ink-muted">
             {MEAL_LABELS[meal.slot]}
             {meal.locked && (
-              <span className="inline-flex items-center gap-0.5 rounded-full bg-ink px-1.5 py-0.5 text-[0.6rem] text-lime">
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-ink px-1.5 py-0.5 text-[0.6rem] text-gold">
                 <Lock aria-hidden className="size-2.5" /> Gardé
               </span>
             )}
             {meal.done && (
-              <span className="inline-flex items-center gap-0.5 rounded-full bg-mint-soft px-1.5 py-0.5 text-[0.6rem] text-mint-deep">
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-sage-soft px-1.5 py-0.5 text-[0.6rem] text-sage-deep">
                 <Check aria-hidden className="size-2.5" /> Préparé
               </span>
             )}
@@ -108,7 +108,7 @@ export function MealCard({
             notify(meal.locked ? "Repas déverrouillé" : "Repas verrouillé");
           }}
         >
-          {meal.locked ? <Lock aria-hidden className="size-[1.1rem] text-lime" /> : <LockOpen aria-hidden className="size-[1.1rem]" />}
+          {meal.locked ? <Lock aria-hidden className="size-[1.1rem] text-gold" /> : <LockOpen aria-hidden className="size-[1.1rem]" />}
         </IconButton>
         <IconButton label="Remplacer ce repas" disabled={meal.locked} onClick={() => setReplaceOpen(true)}>
           <RefreshCw aria-hidden className="size-[1.1rem]" />

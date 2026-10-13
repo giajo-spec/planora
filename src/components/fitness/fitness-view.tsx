@@ -39,7 +39,7 @@ function TargetField({ label, unit, value, onChange }: { label: string; unit: st
           min={0}
           value={value}
           onChange={(e) => onChange(Math.max(0, Number(e.target.value) || 0))}
-          className="w-full bg-transparent font-display text-2xl font-extrabold tabular-nums outline-none"
+          className="w-full bg-transparent font-display text-2xl font-semibold tabular-nums outline-none"
         />
         <span className="font-bold text-ink-muted">{unit}</span>
       </span>
@@ -67,7 +67,7 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
   return (
     <div className="page space-y-8">
       <header className="overflow-hidden rounded-card bg-ink p-6 text-paper sm:p-8">
-        <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-lime">
+        <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-gold">
           <Dumbbell aria-hidden className="size-4" /> En forme
         </p>
         <h1 className="mt-2 max-w-2xl text-display-lg">Nourrir vos entraînements.</h1>
@@ -76,10 +76,10 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
         </p>
         {n && (
           <div className="mt-6 flex flex-wrap gap-6 rounded-3xl bg-paper p-4 text-ink">
-            <TargetRing value={n.kcal} target={profile.targets.kcal} label="Calories" unit="kcal" color="#FF5B2E" size={88} />
-            <TargetRing value={n.protein} target={profile.targets.protein} label="Protéines" unit="g" color="#5B3DF5" size={88} />
-            <TargetRing value={n.carbs} target={profile.targets.carbs} label="Glucides" unit="g" color="#2F9BFF" size={88} />
-            <TargetRing value={n.fat} target={profile.targets.fat} label="Lipides" unit="g" color="#FFB21E" size={88} />
+            <TargetRing value={n.kcal} target={profile.targets.kcal} label="Calories" unit="kcal" color="#B4643E" size={88} />
+            <TargetRing value={n.protein} target={profile.targets.protein} label="Protéines" unit="g" color="#5C3A5A" size={88} />
+            <TargetRing value={n.carbs} target={profile.targets.carbs} label="Glucides" unit="g" color="#48677F" size={88} />
+            <TargetRing value={n.fat} target={profile.targets.fat} label="Lipides" unit="g" color="#D6A445" size={88} />
             <p className="self-center text-sm font-semibold text-ink-muted">Aujourd&apos;hui, d&apos;après votre plan*</p>
           </div>
         )}
@@ -88,8 +88,8 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Objectifs personnalisables */}
         <section aria-labelledby="objectifs" className="card p-5">
-          <h2 id="objectifs" className="flex items-center gap-2 text-xl font-extrabold">
-            <Flame aria-hidden className="size-5 text-tomato" /> Mes objectifs quotidiens
+          <h2 id="objectifs" className="flex items-center gap-2 text-xl font-semibold">
+            <Flame aria-hidden className="size-5 text-terra" /> Mes objectifs quotidiens
           </h2>
           <form
             className="mt-4"
@@ -119,13 +119,13 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
         {/* Calculateur de protéines + portions */}
         <section aria-labelledby="calcul" className="card space-y-5 p-5">
           <div>
-            <h2 id="calcul" className="flex items-center gap-2 text-xl font-extrabold">
-              <Calculator aria-hidden className="size-5 text-violet" /> Besoin en protéines
+            <h2 id="calcul" className="flex items-center gap-2 text-xl font-semibold">
+              <Calculator aria-hidden className="size-5 text-plum" /> Besoin en protéines
             </h2>
             <div className="mt-4 flex flex-wrap items-end gap-3">
               <label className="block">
                 <span className="text-sm font-bold">Poids</span>
-                <span className="mt-1 flex min-h-12 items-center gap-1 rounded-2xl border-2 border-line bg-paper px-4 focus-within:border-ink">
+                <span className="mt-1 flex min-h-12 items-center gap-1 rounded-2xl border border-line bg-paper px-4 focus-within:border-ink">
                   <input
                     type="number"
                     inputMode="decimal"
@@ -134,7 +134,7 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
                     value={fitness.weightKg ?? ""}
                     onChange={(e) => setFitness({ weightKg: e.target.value ? Number(e.target.value) : null })}
                     placeholder="70"
-                    className="w-20 bg-transparent font-display text-xl font-extrabold outline-none"
+                    className="w-20 bg-transparent font-display text-xl font-semibold outline-none"
                   />
                   <span className="font-bold text-ink-muted">kg</span>
                 </span>
@@ -148,9 +148,9 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
               ))}
             </div>
             {range ? (
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-violet-soft p-4">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-plum-soft p-4">
                 <p>
-                  Repère général : <span className="font-display text-2xl font-extrabold">{range[0]}–{range[1]} g</span> de protéines par jour.
+                  Repère général : <span className="font-display text-2xl font-semibold">{range[0]}–{range[1]} g</span> de protéines par jour.
                 </p>
                 <Button
                   variant="dark"
@@ -171,7 +171,7 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
           </div>
 
           <div className="border-t border-line pt-5">
-            <h3 className="text-lg font-extrabold">Mes portions</h3>
+            <h3 className="text-lg font-semibold">Mes portions</h3>
             <p className="mt-1 text-sm text-ink-muted">
               Mangez-vous plus (ou moins) qu&apos;une portion standard ? Ce facteur s&apos;applique à votre part dans chaque repas.
             </p>
@@ -199,8 +199,8 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
       {/* Avant / après */}
       <section aria-labelledby="timing" className="grid gap-4 md:grid-cols-2">
         <h2 id="timing" className="sr-only">Avant et après l&apos;entraînement</h2>
-        <div className="rounded-card bg-sun-soft p-5">
-          <h3 className="flex items-center gap-2 text-xl font-extrabold">
+        <div className="rounded-card bg-amber-soft p-5">
+          <h3 className="flex items-center gap-2 text-xl font-semibold">
             <Sunrise aria-hidden className="size-5" /> Avant l&apos;entraînement
           </h3>
           <p className="mt-2 text-ink-soft">1 à 3 h avant : des glucides faciles à digérer, un peu de protéines, peu de gras et de fibres.</p>
@@ -212,8 +212,8 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
             ))}
           </ul>
         </div>
-        <div className="rounded-card bg-violet-soft p-5">
-          <h3 className="flex items-center gap-2 text-xl font-extrabold">
+        <div className="rounded-card bg-plum-soft p-5">
+          <h3 className="flex items-center gap-2 text-xl font-semibold">
             <Moon aria-hidden className="size-5" /> Après l&apos;entraînement
           </h3>
           <p className="mt-2 text-ink-soft">Dans les heures qui suivent : protéines de qualité et glucides pour récupérer.</p>
@@ -228,8 +228,8 @@ function FitnessContent({ profile, plan }: { profile: Profile; plan: MealPlan | 
       </section>
 
       <section aria-labelledby="proteines">
-        <h2 id="proteines" className="flex items-center gap-2 text-2xl font-extrabold">
-          <Zap aria-hidden className="size-6 text-violet" /> Repas riches en protéines
+        <h2 id="proteines" className="flex items-center gap-2 text-2xl font-semibold">
+          <Zap aria-hidden className="size-6 text-plum" /> Repas riches en protéines
         </h2>
         <p className="mt-1 text-ink-muted">Compatibles avec votre profil, du plus protéiné au moins protéiné.</p>
         <ul className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

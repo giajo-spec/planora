@@ -8,15 +8,15 @@ import { formatMinutes } from "@/components/recipe/recipe-meta";
 export function DaySummary({ day, profile }: { day: PlanDay; profile: Profile }) {
   const n = roundNutrition(dayNutritionPerPerson(day, profile.portionFactor));
   const rows = [
-    { label: "Calories", value: n.kcal, target: profile.targets.kcal, unit: "kcal", tone: "tomato" as const },
-    { label: "Protéines", value: n.protein, target: profile.targets.protein, unit: "g", tone: "violet" as const },
-    { label: "Glucides", value: n.carbs, target: profile.targets.carbs, unit: "g", tone: "sky" as const },
-    { label: "Lipides", value: n.fat, target: profile.targets.fat, unit: "g", tone: "sun" as const },
+    { label: "Calories", value: n.kcal, target: profile.targets.kcal, unit: "kcal", tone: "terra" as const },
+    { label: "Protéines", value: n.protein, target: profile.targets.protein, unit: "g", tone: "plum" as const },
+    { label: "Glucides", value: n.carbs, target: profile.targets.carbs, unit: "g", tone: "slate" as const },
+    { label: "Lipides", value: n.fat, target: profile.targets.fat, unit: "g", tone: "amber" as const },
   ];
   return (
     <div className="card p-4">
       <div className="mb-3 flex items-baseline justify-between gap-2">
-        <h3 className="font-extrabold">Pour vous ce jour-là*</h3>
+        <h3 className="font-semibold">Pour vous ce jour-là*</h3>
         <span className="text-sm font-semibold text-ink-muted">{formatMinutes(dayMinutes(day))} en cuisine</span>
       </div>
       <div className="space-y-2.5">
