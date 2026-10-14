@@ -149,7 +149,16 @@ export function scoreRecipe(recipe: Recipe, slot: MealType, profile: Profile, us
   if (profile.nutritionFocus.includes("lipides")) score -= n.fat / 12;
 
   const liked = recipe.ingredients.filter((l) => profile.likedIngredients.includes(l.ingredientId)).length;
-  score += liked * 1.5;
+  score += liked * (profile.subscription === "personnalise" ? 2.5 : 1.5);
+
+  // Effets des formules d'abonnement.
+  const kids = (profile.childrenCount ?? 0) > 0 || profile.subscription === "famille";
+  if (kids) score += recipe.tags.includes("enfants") ? 3 : recipe.tags.includes("familial") ? 1 : -1;
+  if (profile.subscription === "famille" && recipe.tags.includes("prep-avance")) score += 0.5;
+  if (profile.subscription === "en-forme") {
+    score += n.protein / 8;
+    if (recipe.tags.includes("post-entrainement")) score += 2;
+  }
 
   score -= (usage.week.get(recipe.id) ?? 0) * 6;
   if (usage.previous === recipe.id) score -= 4;

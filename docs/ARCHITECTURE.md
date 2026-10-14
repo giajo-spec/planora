@@ -37,7 +37,7 @@ et `fitness` via le `StorageAdapter`.
 | Sauvegarde serveur | `SupabaseStorageAdapter implements StorageAdapter`, injecté dans `<AppProvider storage={…}>` | Table `user_state(user_id, key, value jsonb)` + RLS |
 | IA de planification | `RemoteMealPlanner implements MealPlanner` appelant une route serveur | Revalider le résultat avec `planViolations()` avant de l'afficher |
 | IA de cuisine | `src/app/api/assistant/route.ts` (actuellement 501, documentée) + `RemoteCookingAssistant` | Clé dans les variables d'environnement serveur, repli sur `StaticCookingAssistant` |
-| Abonnements | Route serveur Stripe Checkout + webhook ; champ `plan` sur l'utilisateur | Aucune clé Stripe secrète côté client |
+| Paiement des formules | Route serveur Stripe Checkout + webhook ; `profile.subscription` existe déjà | Aucune clé Stripe secrète côté client |
 | Prix d'épicerie | `PriceProvider` (lib/grocery/price-provider.ts) via route serveur | Ne jamais afficher un prix sans source datée |
 | Recommandations selon l'historique | Journaliser `done` des `PlannedMeal` côté serveur ; ajouter un terme au score de `scoreRecipe` | |
 | PWA / hors ligne | `src/app/manifest.ts` existe ; ajouter un service worker | |
@@ -48,6 +48,13 @@ et `fitness` via le `StorageAdapter`.
 - `src/lib/data/ingredients.ts` : ingrédient normalisé = allergènes, catégorie animale (pour les
   régimes), restrictions enfreintes, rayon, nutrition pour 100 g, densité (volume → masse),
   poids unitaire et pas d'arrondi (½ citron, 1 œuf).
-- `src/lib/data/recipes/` : 22 recettes ; chaque étape référence les ingrédients qu'elle utilise
+- `src/lib/data/generator/` : moteur de composition (≈ 1 990 recettes). `components.ts` décrit les
+  briques (protéines avec méthodes de cuisson et températures, féculents, légumes, saveurs),
+  `formats.ts` les formats de plats, `builder.ts` fusionne les ingrédients et calcule la part utilisée à
+  chaque étape. Pour ajouter des recettes : ajouter une brique ou un format ; les tests vérifient
+  automatiquement cohérence, allergènes et nutrition de tout le catalogue.
+- `src/lib/subscriptions.ts` : formules et réglages recommandés ; effets dans `scoreRecipe`.
+- `src/components/recipe/food-illustration.tsx` : illustrations SVG générées par recette.
+- `src/lib/data/recipes/` : 22 recettes signatures ; chaque étape référence les ingrédients qu'elle utilise
   (avec une fraction si l'ingrédient est réparti), ce qui alimente l'affichage « Pour cette étape »
   de la cuisine guidée. Un test vérifie que chaque ingrédient est utilisé et jamais plus qu'en totalité.

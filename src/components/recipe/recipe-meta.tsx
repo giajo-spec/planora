@@ -1,4 +1,4 @@
-import { Clock, Flame, Leaf, Dumbbell, Fish } from "lucide-react";
+import { Clock, Flame, Leaf, Dumbbell, Fish, Smile, Star } from "lucide-react";
 import { DIFFICULTY_LABELS } from "@/lib/domain/labels";
 import type { Recipe } from "@/lib/domain/types";
 import { isHighProtein, nutritionPerServing, roundNutrition } from "@/lib/nutrition/nutrition";
@@ -15,6 +15,18 @@ export function formatMinutes(minutes: number): string {
 export function RecipeBadges({ recipe, max = 3 }: { recipe: Recipe; max?: number }) {
   const badges: React.ReactNode[] = [];
   const diet = recipeDietBadge(recipe);
+  if (!recipe.generated)
+    badges.push(
+      <Badge key="sig" tone="dark">
+        <Star aria-hidden className="size-3 text-gold-light" /> Signature
+      </Badge>,
+    );
+  if (recipe.tags.includes("enfants"))
+    badges.push(
+      <Badge key="kid" tone="amber">
+        <Smile aria-hidden className="size-3" /> Enfants
+      </Badge>,
+    );
   if (isHighProtein(recipe))
     badges.push(
       <Badge key="hp" tone="plum">

@@ -1,8 +1,10 @@
 "use client";
 
-import { ArrowRight, BookOpen, CalendarPlus, Check, ChefHat, Dumbbell, PartyPopper, ShoppingBasket, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarPlus, Check, ChefHat, Crown, Dumbbell, PartyPopper, ShoppingBasket, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { CollectionRail } from "@/components/recipe/recipe-catalog";
+import { planOffer } from "@/lib/subscriptions";
 import { Suspense } from "react";
 import { RequireProfile } from "@/components/layout/require-profile";
 import { TargetRing } from "@/components/recipe/nutrition";
@@ -47,6 +49,7 @@ const longDate = new Intl.DateTimeFormat("fr-CA", { weekday: "long", day: "numer
 function DashboardContent({ profile, plan }: { profile: Profile; plan: MealPlan | null }) {
   const { createPlan, toggleDone, groceryLines, groceryState } = useApp();
   const { notify } = useToast();
+  const router = useRouter();
   const params = useSearchParams();
   const today = todayISO();
   const welcome = params.get("bienvenue") === "1";
@@ -83,7 +86,15 @@ function DashboardContent({ profile, plan }: { profile: Profile; plan: MealPlan 
         <p className="mt-2 text-lg text-ink-soft">
           Objectif : <span className="font-bold text-ink">{GOAL_LABELS[profile.goal].toLowerCase()}</span> · {profile.householdSize}{" "}
           {profile.householdSize > 1 ? "personnes" : "personne"}
+          {(profile.childrenCount ?? 0) > 0 && <> dont {profile.childrenCount} enfant{(profile.childrenCount ?? 0) > 1 ? "s" : ""}</>}
         </p>
+        <Link
+          href="/abonnements"
+          className="mt-3 inline-flex min-h-tap items-center gap-2 rounded-full border border-gold/70 bg-gold-soft px-4 text-sm font-semibold text-gold-deep transition hover:bg-gold hover:text-ink"
+        >
+          <Crown aria-hidden className="size-4" />
+          {planOffer(profile.subscription) ? `Formule ${planOffer(profile.subscription)!.name}` : "Choisir une formule"}
+        </Link>
       </header>
 
       {profile.isDemo && (
@@ -218,6 +229,17 @@ function DashboardContent({ profile, plan }: { profile: Profile; plan: MealPlan 
             );
           })}
         </ul>
+      </section>
+
+      {/* Collections */}
+      <section aria-labelledby="explorer">
+        <div className="mb-3 flex items-end justify-between">
+          <h2 id="explorer" className="text-2xl font-semibold">Explorer les collections</h2>
+          <Link href="/recettes" className="inline-flex min-h-tap items-center gap-1 text-sm font-bold hover:underline">
+            Toutes les recettes <ArrowRight aria-hidden className="size-4" />
+          </Link>
+        </div>
+        <CollectionRail active={null} onSelect={(key) => router.push(key ? `/recettes?collection=${key}` : "/recettes")} />
       </section>
 
       {/* Semaine + avancement */}

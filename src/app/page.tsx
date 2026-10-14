@@ -10,7 +10,10 @@ import {
   ShoppingBasket,
   Timer,
 } from "lucide-react";
+import Link from "next/link";
 import { DemoButton, ResumeLink } from "@/components/landing/demo-button";
+import { PricingCards } from "@/components/pricing/pricing-cards";
+import { COLLECTIONS } from "@/lib/recipes/collections";
 import { Logo } from "@/components/layout/logo";
 import { RecipeImage } from "@/components/recipe/recipe-image";
 import { ButtonLink } from "@/components/ui/button";
@@ -28,6 +31,18 @@ const FEATURES = [
   { icon: ShieldCheck, title: "Allergies respectées", text: "Vos allergies sont des règles strictes : une recette qui contient un allergène déclaré n'est jamais proposée." },
 ];
 
+const SHOWCASE = [
+  { id: "poulet-tikka", label: "Signature" },
+  { id: "pizzas-tortillas-epinards-tomates", label: "Pour les enfants" },
+  { id: "bol-teriyaki-saumon-riz-jasmin-brocoli-carotte", label: "Riche en protéines" },
+  { id: "soupe-coco-cari-lentilles-kale-patate", label: "Végétalien" },
+  { id: "smoothie-mangue-ananas-yogourt-lait", label: "Après l'entraînement" },
+  { id: "tacos-mexicain-morue", label: "En famille" },
+  { id: "pates-penne-pesto-poulet-asperges-pois", label: "Express" },
+  { id: "plaque-provence-saumon-pdt-haricots", label: "Une seule plaque" },
+  { id: "parfait-yogourt-petits-fruits-avoine-erable", label: "Collation" },
+];
+
 export default function LandingPage() {
   const hero = ["poulet-tikka", "poke-saumon", "shakshuka"].map((id) => getRecipe(id)!);
   const tikka = roundNutrition(nutritionPerServing(hero[0]));
@@ -41,7 +56,8 @@ export default function LandingPage() {
         <nav aria-label="Sections" className="hidden items-center gap-6 text-sm font-bold md:flex">
           <a href="#fonctionnalites" className="hover:underline">Fonctionnalités</a>
           <a href="#en-forme" className="hover:underline">En forme</a>
-          <a href="#abonnement" className="hover:underline">Abonnement</a>
+          <a href="#recettes" className="hover:underline">Recettes</a>
+          <a href="#abonnement" className="hover:underline">Formules</a>
         </nav>
         <ResumeLink />
       </header>
@@ -115,7 +131,7 @@ export default function LandingPage() {
       {/* Bandeau */}
       <section className="bg-ink text-gold-light">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-2 px-4 py-5 text-center font-display text-lg italic">
-          <span>{RECIPES.length} recettes testées</span>
+          <span>{RECIPES.length.toLocaleString("fr-CA")} recettes</span>
           <span aria-hidden className="text-gold">✦</span>
           <span>{cuisines} cuisines du monde</span>
           <span aria-hidden className="text-gold">✦</span>
@@ -204,37 +220,56 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Abonnement */}
-      <section id="abonnement" className="mx-auto max-w-6xl scroll-mt-6 px-4 py-20 sm:px-6">
-        <h2 className="text-display-lg">Simple et transparent</h2>
-        <div className="mt-10 grid gap-5 md:grid-cols-2">
-          <div className="rounded-card border border-gold/70 bg-surface p-7 shadow-pop-lg">
-            <p className="eyebrow">Disponible aujourd&apos;hui</p>
-            <h3 className="mt-1 text-3xl font-semibold">Gratuit</h3>
-            <ul className="mt-5 space-y-2.5">
-              {["Questionnaire et plan de 7 jours", "Catalogue de recettes et filtres", "Liste d'épicerie intelligente", "Cuisine guidée avec minuteries", "Section « En forme »"].map((t) => (
-                <li key={t} className="flex gap-2">
-                  <Check aria-hidden className="mt-0.5 size-5 shrink-0 text-sage-deep" /> {t}
-                </li>
-              ))}
-            </ul>
-            <ButtonLink href="/questionnaire" size="lg" block className="mt-7">
-              Commencer gratuitement
+      {/* Bibliothèque */}
+      <section id="recettes" className="scroll-mt-6 bg-surface py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="eyebrow">La bibliothèque</p>
+              <h2 className="mt-2 max-w-2xl text-display-lg">
+                {RECIPES.length.toLocaleString("fr-CA")} recettes, <em className="font-light text-gold-deep">une seule règle</em> : vous.
+              </h2>
+            </div>
+            <ButtonLink href="/recettes" variant="secondary">
+              Explorer les recettes <ArrowRight aria-hidden className="size-4" />
             </ButtonLink>
           </div>
-          <div className="rounded-card bg-plum p-7 text-paper">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-paper/80">En préparation</p>
-            <h3 className="mt-1 text-3xl font-semibold">Premium</h3>
-            <p className="mt-2 text-paper/85">L&apos;abonnement n&apos;est pas encore offert. Ce qui est prévu :</p>
-            <ul className="mt-5 space-y-2.5">
-              {["Compte et synchronisation entre appareils", "Personnalisation par IA et historique", "Prix des épiceries près de chez vous", "Application mobile installable"].map((t) => (
-                <li key={t} className="flex gap-2">
-                  <span aria-hidden className="mt-2 size-2 shrink-0 rounded-full bg-gold" /> {t}
-                </li>
-              ))}
-            </ul>
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {SHOWCASE.map(({ id, label }, i) => {
+              const r = getRecipe(id)!;
+              return (
+                <Link key={id} href={`/recettes/${id}`} className={`group relative overflow-hidden rounded-3xl ${i === 0 ? "col-span-2 row-span-2" : ""}`}>
+                  <RecipeImage recipe={r} className={`w-full transition duration-700 group-hover:scale-[1.03] ${i === 0 ? "aspect-square" : "aspect-[4/3]"}`} />
+                  <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent p-4 pt-10 text-paper">
+                    <span className="block text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-gold-light">{label}</span>
+                    <span className={`block font-display leading-tight ${i === 0 ? "text-2xl" : "text-sm"}`}>{r.name}</span>
+                  </span>
+                </Link>
+              );
+            })}
           </div>
+          <ul className="mt-8 flex flex-wrap gap-2">
+            {COLLECTIONS.map((c) => (
+              <li key={c.key}>
+                <Link href={`/recettes?collection=${c.key}`} className="inline-flex min-h-tap items-center rounded-full border border-line px-4 text-sm font-semibold hover:border-gold hover:text-gold-deep">
+                  {c.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
+      </section>
+
+      {/* Formules */}
+      <section id="abonnement" className="mx-auto max-w-6xl scroll-mt-6 px-4 py-24 sm:px-6">
+        <div className="mx-auto mb-12 max-w-2xl text-center">
+          <p className="eyebrow">Trois formules</p>
+          <h2 className="mt-2 text-display-lg">
+            Personnalisé, Famille ou <em className="font-light text-gold-deep">En forme</em>.
+          </h2>
+          <p className="mt-4 text-lg text-ink-soft">Chaque formule change vraiment vos menus : recettes priorisées, portions et objectifs.</p>
+        </div>
+        <PricingCards />
       </section>
 
       <footer className="border-t border-line px-4 py-10 text-center text-sm text-ink-muted">

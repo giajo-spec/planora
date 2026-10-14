@@ -1,9 +1,10 @@
 "use client";
 
-import { BookOpen, CalendarDays, Dumbbell, Home, ShoppingBasket, UserRound } from "lucide-react";
+import { BookOpen, CalendarDays, Crown, Dumbbell, Home, ShoppingBasket, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useApp } from "@/lib/state/app-store";
+import { planOffer } from "@/lib/subscriptions";
 import { cn } from "@/lib/utils/cn";
 import { Logo } from "./logo";
 
@@ -34,7 +35,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <aside className="sticky top-0 hidden h-dvh flex-col border-r border-line bg-surface px-5 py-6 lg:flex">
         <Logo href="/accueil" />
         <nav aria-label="Navigation principale" className="mt-10 flex flex-col gap-1">
-          {[...NAV.slice(0, 4), { href: "/en-forme", label: "En forme", icon: Dumbbell }, NAV[4]].map(({ href, label, icon: Icon }) => {
+          {[...NAV.slice(0, 4), { href: "/en-forme", label: "En forme", icon: Dumbbell }, { href: "/abonnements", label: "Formules", icon: Crown }, NAV[4]].map(({ href, label, icon: Icon }) => {
             const active = isActive(pathname, href);
             return (
               <Link
@@ -55,10 +56,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="mt-auto rounded-3xl bg-paper p-4 text-sm">
-          <p className="font-bold">{profile?.isDemo ? "Mode démonstration" : profile ? `Bonjour ${profile.name || "!"}` : "Bienvenue !"}</p>
-          <p className="mt-1 text-ink-muted">Vos données restent dans ce navigateur.</p>
-        </div>
+        <Link href="/abonnements" className="group mt-auto block rounded-3xl bg-ink p-5 text-paper transition hover:bg-ink-soft">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-gold-light">
+            {profile?.isDemo ? "Mode démonstration" : "Votre formule"}
+          </p>
+          <p className="mt-1 font-display text-xl">{planOffer(profile?.subscription)?.name ?? "Découvrir les formules"}</p>
+          <p className="mt-1 text-xs text-paper/65 group-hover:text-paper/85">Personnalisé · Famille · En forme →</p>
+        </Link>
       </aside>
 
       <main id="contenu" className="min-w-0">

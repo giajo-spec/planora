@@ -27,7 +27,9 @@ describe("filtres du catalogue", () => {
 
   it("recherche sans tenir compte des accents ni de la casse", () => {
     expect(applyRecipeFilters(RECIPES, { ...EMPTY_FILTERS, query: "THAI" }).map((r) => r.id)).toContain("pad-thai-crevettes");
-    expect(applyRecipeFilters(RECIPES, { ...EMPTY_FILTERS, query: "lentilles coco" }).map((r) => r.id)).toEqual(["dal-lentilles-corail"]);
+    const lentilles = applyRecipeFilters(RECIPES, { ...EMPTY_FILTERS, query: "lentilles coco" });
+    expect(lentilles.map((r) => r.id)).toContain("dal-lentilles-corail");
+    expect(lentilles.every((r) => /lentilles/i.test(JSON.stringify(r)) && /coco/i.test(JSON.stringify(r)))).toBe(true);
     // recherche par ingrédient
     expect(applyRecipeFilters(RECIPES, { ...EMPTY_FILTERS, query: "tahini" }).map((r) => r.id)).toEqual(
       expect.arrayContaining(["bol-falafels", "houmous-crudites"]),

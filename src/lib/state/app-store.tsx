@@ -9,7 +9,9 @@ import type {
   MealPlan,
   MealType,
   Profile,
+  SubscriptionPlan,
 } from "@/lib/domain/types";
+import { presetFor } from "@/lib/subscriptions";
 import * as grocery from "@/lib/grocery/grocery";
 import * as plans from "@/lib/planner/planner";
 import { ruleBasedPlanner, type MealPlanner } from "@/lib/planner/planner";
@@ -60,6 +62,8 @@ interface AppContextValue {
 
   saveProfile(profile: Profile): void;
   updateProfile(patch: Partial<Profile>): void;
+  /** Active une formule : applique ses réglages recommandés et adapte le menu (repas verrouillés conservés). */
+  chooseSubscription(plan: SubscriptionPlan): void;
   startDemo(): void;
   resetAll(): Promise<void>;
 
@@ -207,6 +211,9 @@ export function AppProvider({
       fitness,
       saveProfile,
       updateProfile,
+      chooseSubscription: (sub) => {
+        if (profileRef.current) saveProfile(presetFor(sub, profileRef.current));
+      },
       startDemo,
       resetAll,
 

@@ -1,9 +1,16 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Check, Minus, Plus, ShieldAlert } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {
+  Activity, Apple, ArrowLeft, ArrowRight, Bean, Blend, Carrot, Check, ChefHat, Clock, Coffee, CookingPot, Drumstick, Dumbbell,
+  Egg, Fish, Flame, Hourglass, Milk, Minus, Nut, Plus, Salad, Scale, Shell, ShieldAlert, Smile, Soup, Sprout, Target, Timer,
+  User, Users, UtensilsCrossed, Wheat, Wind, Zap, type LucideIcon,
+} from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LogoMark } from "@/components/layout/logo";
+import { RecipeImage } from "@/components/recipe/recipe-image";
+import { ingredientColor } from "@/lib/data/ingredient-colors";
+import { PLAN_OFFERS, formatPrice, presetFor } from "@/lib/subscriptions";
 import { Button } from "@/components/ui/button";
 import { Chip, ProgressBar } from "@/components/ui/primitives";
 import { INGREDIENTS } from "@/lib/data/ingredients";
@@ -31,6 +38,7 @@ import type {
   NutritionFocus,
   Profile,
   Restriction,
+  SubscriptionPlan,
   TimeBudget,
 } from "@/lib/domain/types";
 import { defaultTargets } from "@/lib/nutrition/nutrition";
@@ -48,15 +56,24 @@ const TASTE_INGREDIENTS = [
   "abricots-secs", "tahini",
 ];
 
-const TIME_OPTIONS: Array<{ value: TimeBudget; label: string; hint: string }> = [
-  { value: 15, label: "15 min", hint: "Express" },
-  { value: 30, label: "30 min", hint: "Rapide" },
-  { value: 45, label: "45 min", hint: "Confortable" },
-  { value: 60, label: "1 h", hint: "J'ai le temps" },
-  { value: 90, label: "1 h 30 +", hint: "J'adore cuisiner" },
+const TIME_OPTIONS: Array<{ value: TimeBudget; label: string; hint: string; icon: LucideIcon }> = [
+  { value: 15, label: "15 min", hint: "Express", icon: Zap },
+  { value: 30, label: "30 min", hint: "Rapide", icon: Timer },
+  { value: 45, label: "45 min", hint: "Confortable", icon: Clock },
+  { value: 60, label: "1 h", hint: "J'ai le temps", icon: Hourglass },
+  { value: 90, label: "1 h 30 +", hint: "J'adore cuisiner", icon: CookingPot },
 ];
 
+const DIET_ICONS: Record<Diet, LucideIcon> = { omnivore: Drumstick, flexitarien: Salad, pescetarien: Fish, vegetarien: Carrot, vegetalien: Sprout };
+const LEVEL_ICONS: Record<CookingLevel, LucideIcon> = { debutant: Smile, intermediaire: ChefHat, avance: Flame };
+const GOAL_ICONS: Record<Goal, LucideIcon> = { equilibre: Scale, "perte-gras": Activity, "prise-muscle": Dumbbell, maintien: Target };
+const MEAL_ICONS: Record<MealType, LucideIcon> = { dejeuner: Coffee, diner: Salad, souper: Soup, collation: Apple };
+const PLAN_ICONS: Record<SubscriptionPlan, LucideIcon> = { personnalise: User, famille: Users, "en-forme": Dumbbell };
+const ALLERGEN_ICONS: Partial<Record<Allergen, LucideIcon>> = { arachides: Nut, noix: Nut, lait: Milk, oeufs: Egg, poisson: Fish, "fruits-de-mer": Shell, soja: Bean, gluten: Wheat };
+const EQUIPMENT_ICONS: Record<Equipment, LucideIcon> = { four: Flame, mijoteuse: CookingPot, "friteuse-air": Wind, melangeur: Blend, "robot-culinaire": UtensilsCrossed, autocuiseur: Timer };
+
 const STEPS = [
+  "formule",
   "foyer",
   "regime",
   "allergies",
@@ -90,11 +107,13 @@ function OptionCard({
   onSelect,
   title,
   description,
+  icon: Icon,
 }: {
   selected: boolean;
   onSelect: () => void;
   title: string;
   description?: string;
+  icon?: LucideIcon;
 }) {
   return (
     <button
@@ -107,12 +126,17 @@ function OptionCard({
         selected ? "border-gold bg-gold-soft shadow-gold" : "border-line bg-surface hover:border-ink",
       )}
     >
-      <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-full border", selected ? "border-ink bg-ink" : "border-ink-muted")}>
-        {selected && <Check aria-hidden className="size-4 text-gold-light" />}
-      </span>
-      <span>
+      {Icon && (
+        <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-full border transition", selected ? "border-ink bg-ink text-gold-light" : "border-gold/60 text-gold-deep")}>
+          <Icon aria-hidden className="size-5" />
+        </span>
+      )}
+      <span className="flex-1">
         <span className="block text-lg font-semibold">{title}</span>
         {description && <span className="block text-sm text-ink-soft">{description}</span>}
+      </span>
+      <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-full border", selected ? "border-ink bg-ink" : "border-ink-muted")}>
+        {selected && <Check aria-hidden className="size-4 text-gold-light" />}
       </span>
     </button>
   );
@@ -156,6 +180,8 @@ function NumberField({ label, unit, value, onChange }: { label: string; unit: st
 export function Questionnaire() {
   const { hydrated, profile: existing, storage, saveProfile } = useApp();
   const router = useRouter();
+  const params = useSearchParams();
+  const forfait = PLAN_OFFERS.find((o) => o.key === params.get("forfait"))?.key;
   const [draft, setDraft] = useState<Draft | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -164,9 +190,12 @@ export function Questionnaire() {
     if (!hydrated || draft) return;
     void storage.load<Draft>(STORAGE_KEYS.questionnaireDraft).then((saved) => {
       const base = existing && !existing.isDemo ? existing : createEmptyProfile();
-      setDraft(saved ? { step: Math.min(saved.step, STEPS.length - 1), profile: { ...base, ...saved.profile } } : { step: 0, profile: base });
+      const start: Draft = saved ? { step: Math.min(saved.step, STEPS.length - 1), profile: { ...base, ...saved.profile } } : { step: 0, profile: base };
+      // Formule choisie depuis la page des formules : réglages recommandés appliqués.
+      if (forfait) start.profile = presetFor(forfait, start.profile);
+      setDraft(start);
     });
-  }, [hydrated, draft, existing, storage]);
+  }, [hydrated, draft, existing, storage, forfait]);
 
   useEffect(() => {
     if (draft) void storage.save(STORAGE_KEYS.questionnaireDraft, draft);
@@ -177,11 +206,20 @@ export function Questionnaire() {
     headingRef.current?.focus();
   }, [step]);
 
-  const compatibleCount = useMemo(() => {
-    if (!draft) return 0;
+  const compatible = useMemo(() => {
+    if (!draft) return [];
     const ctx = { profile: draft.profile, recipes: RECIPES };
-    return new Set((["dejeuner", "diner", "souper", "collation"] as MealType[]).flatMap((s) => eligibleRecipes(s, ctx).map((r) => r.id))).size;
+    const seen = new Map<string, (typeof RECIPES)[number]>();
+    for (const slot of ["dejeuner", "diner", "souper", "collation"] as MealType[]) for (const r of eligibleRecipes(slot, ctx)) seen.set(r.id, r);
+    return [...seen.values()];
   }, [draft]);
+  const compatibleCount = compatible.length;
+  // Aperçu : recettes compatibles variées (une sur ~N), qui changent avec les réponses.
+  const preview = useMemo(() => {
+    if (compatible.length === 0) return [];
+    const stride = Math.max(1, Math.floor(compatible.length / 6));
+    return [0, 1, 2, 3].map((i) => compatible[(i * stride * 7 + 3) % compatible.length]).filter((r, i, all) => all.indexOf(r) === i);
+  }, [compatible]);
 
   if (!draft) {
     return <div className="min-h-dvh bg-paper" aria-busy="true" />;
@@ -203,6 +241,7 @@ export function Questionnaire() {
   };
 
   const titles: Record<StepId, { title: string; subtitle: string }> = {
+    formule: { title: "Choisissez votre formule", subtitle: "Elle oriente vos recettes, vos portions et vos priorités. Vous pourrez en changer à tout moment." },
     foyer: { title: "Faisons connaissance", subtitle: "Pour combien de personnes cuisinez-vous habituellement ?" },
     regime: { title: "Votre façon de manger", subtitle: "Choisissez le régime qui vous décrit le mieux." },
     allergies: { title: "Allergies et restrictions", subtitle: "Ces règles sont strictes : aucune recette contenant ces aliments ne vous sera proposée." },
@@ -219,7 +258,7 @@ export function Questionnaire() {
   return (
     <div className="flex min-h-dvh flex-col bg-paper">
       <header className="sticky top-0 z-10 border-b border-line bg-paper/95 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
           {step > 0 ? (
             <button type="button" onClick={() => go(-1)} className="flex size-11 items-center justify-center rounded-full border border-line bg-surface hover:border-ink" aria-label="Étape précédente">
               <ArrowLeft aria-hidden className="size-5" />
@@ -238,14 +277,49 @@ export function Questionnaire() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-40 pt-8">
-        <div key={id} className="animate-slide-up">
+      <main className="mx-auto grid w-full max-w-6xl flex-1 gap-12 px-4 pb-40 pt-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <div key={id} className="mx-auto w-full max-w-2xl animate-slide-up">
           <h1 ref={headingRef} tabIndex={-1} className="text-display-lg outline-none">
             {titles[id].title}
           </h1>
           <p className="mt-3 text-lg text-ink-soft">{titles[id].subtitle}</p>
 
           <div className="mt-8">
+            {id === "formule" && (
+              <div role="radiogroup" aria-label="Formule" className="space-y-3">
+                {PLAN_OFFERS.map((o) => {
+                  const Icon = PLAN_ICONS[o.key];
+                  const selected = p.subscription === o.key;
+                  return (
+                    <button
+                      key={o.key}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => setDraft((d) => (d ? { ...d, profile: presetFor(o.key, d.profile) } : d))}
+                      className={cn(
+                        "flex w-full items-center gap-4 rounded-3xl border p-5 text-left transition active:scale-[0.99]",
+                        selected ? "border-ink bg-ink text-paper shadow-pop-lg" : "border-line bg-surface hover:border-gold",
+                      )}
+                    >
+                      <span className={cn("flex size-14 shrink-0 items-center justify-center rounded-full border", selected ? "border-gold text-gold-light" : "border-gold/60 text-gold-deep")}>
+                        <Icon aria-hidden className="size-6" />
+                      </span>
+                      <span className="flex-1">
+                        <span className="flex items-baseline justify-between gap-2">
+                          <span className="font-display text-2xl">{o.name}</span>
+                          <span className={cn("text-sm", selected ? "text-gold-light" : "text-gold-deep")}>{formatPrice(o.monthly)} / mois</span>
+                        </span>
+                        <span className={cn("block text-sm", selected ? "text-paper/75" : "text-ink-soft")}>{o.audience}</span>
+                        <span className={cn("mt-1 block font-display italic", selected ? "text-gold-light" : "text-ink-muted")}>{o.tagline}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+                <p className="pt-2 text-center text-sm text-ink-muted">Aucun paiement demandé dans ce prototype.</p>
+              </div>
+            )}
+
             {id === "foyer" && (
               <div className="space-y-8">
                 <label className="block">
@@ -262,15 +336,22 @@ export function Questionnaire() {
                 </label>
                 <div>
                   <p className="mb-3 font-bold">Nombre de personnes à nourrir</p>
-                  <Counter value={p.householdSize} onChange={(v) => set({ householdSize: v })} min={1} max={10} label="Nombre de personnes" />
+                  <Counter value={p.householdSize} onChange={(v) => set({ householdSize: v, childrenCount: Math.min(p.childrenCount ?? 0, v - 1) })} min={1} max={10} label="Nombre de personnes" />
                 </div>
+                {p.householdSize > 1 && (
+                  <div>
+                    <p className="mb-1 font-bold">Dont enfants</p>
+                    <p className="mb-3 text-sm text-ink-muted">Nous mettrons en avant des recettes douces, simples et amusantes.</p>
+                    <Counter value={p.childrenCount ?? 0} onChange={(v) => set({ childrenCount: v })} min={0} max={p.householdSize - 1} label="Nombre d'enfants" />
+                  </div>
+                )}
               </div>
             )}
 
             {id === "regime" && (
               <div role="radiogroup" aria-label="Régime alimentaire" className="space-y-3">
                 {(Object.keys(DIET_LABELS) as Diet[]).map((diet) => (
-                  <OptionCard key={diet} selected={p.diet === diet} onSelect={() => set({ diet })} title={DIET_LABELS[diet]} description={DIET_DESCRIPTIONS[diet]} />
+                  <OptionCard key={diet} icon={DIET_ICONS[diet]} selected={p.diet === diet} onSelect={() => set({ diet })} title={DIET_LABELS[diet]} description={DIET_DESCRIPTIONS[diet]} />
                 ))}
               </div>
             )}
@@ -282,7 +363,7 @@ export function Questionnaire() {
                   <div className="flex flex-wrap gap-2">
                     {(Object.keys(ALLERGEN_LABELS) as Allergen[]).map((a) => (
                       <Chip key={a} selected={p.allergens.includes(a)} onClick={() => set({ allergens: toggle(p.allergens, a) })}>
-                        {p.allergens.includes(a) && <ShieldAlert aria-hidden className="size-4 text-terra" />}
+                        {p.allergens.includes(a) ? <ShieldAlert aria-hidden className="size-4 text-gold-light" /> : (() => { const I = ALLERGEN_ICONS[a]; return I ? <I aria-hidden className="size-4 text-gold-deep" /> : null; })()}
                         {ALLERGEN_LABELS[a]}
                       </Chip>
                     ))}
@@ -312,6 +393,7 @@ export function Questionnaire() {
                   const list = p[key];
                   return (
                     <Chip key={ingId} selected={list.includes(ingId)} onClick={() => set({ [key]: toggle(list, ingId) })}>
+                      <span aria-hidden className="size-3 rounded-full ring-1 ring-ink/10" style={{ backgroundColor: ingredientColor(ingId, INGREDIENTS[ingId].aisle) }} />
                       {capitalize(INGREDIENTS[ingId].plural && INGREDIENTS[ingId].countStep ? INGREDIENTS[ingId].plural! : INGREDIENTS[ingId].name)}
                     </Chip>
                   );
@@ -322,7 +404,7 @@ export function Questionnaire() {
             {id === "niveau" && (
               <div role="radiogroup" aria-label="Niveau en cuisine" className="space-y-3">
                 {(Object.keys(LEVEL_LABELS) as CookingLevel[]).map((lvl) => (
-                  <OptionCard key={lvl} selected={p.cookingLevel === lvl} onSelect={() => set({ cookingLevel: lvl })} title={LEVEL_LABELS[lvl]} description={LEVEL_DESCRIPTIONS[lvl]} />
+                  <OptionCard key={lvl} icon={LEVEL_ICONS[lvl]} selected={p.cookingLevel === lvl} onSelect={() => set({ cookingLevel: lvl })} title={LEVEL_LABELS[lvl]} description={LEVEL_DESCRIPTIONS[lvl]} />
                 ))}
               </div>
             )}
@@ -341,7 +423,8 @@ export function Questionnaire() {
                       p.timeBudget === t.value ? "border-gold bg-gold-soft shadow-gold" : "border-line bg-surface hover:border-ink",
                     )}
                   >
-                    <span className="font-display text-2xl font-semibold">{t.label}</span>
+                    <t.icon aria-hidden className={cn("size-5", p.timeBudget === t.value ? "text-gold-deep" : "text-ink-muted")} />
+                    <span className="font-display text-2xl">{t.label}</span>
                     <span className="text-sm font-semibold text-ink-soft">{t.hint}</span>
                   </button>
                 ))}
@@ -352,7 +435,7 @@ export function Questionnaire() {
               <div className="flex flex-wrap gap-2">
                 {(Object.keys(EQUIPMENT_LABELS) as Equipment[]).map((e) => (
                   <Chip key={e} selected={p.equipment.includes(e)} onClick={() => set({ equipment: toggle(p.equipment, e) })}>
-                    {p.equipment.includes(e) && <Check aria-hidden className="size-4" />}
+                    {(() => { const I = EQUIPMENT_ICONS[e]; return <I aria-hidden className={cn("size-4", p.equipment.includes(e) ? "text-gold-light" : "text-gold-deep")} />; })()}
                     {EQUIPMENT_LABELS[e]}
                   </Chip>
                 ))}
@@ -373,7 +456,10 @@ export function Questionnaire() {
                         p.meals.includes(m) ? "border-gold bg-gold-soft shadow-gold" : "border-line bg-surface hover:border-ink",
                       )}
                     >
-                      {m === "collation" ? "Collations" : MEAL_LABELS[m]}
+                      <span className="flex items-center gap-3">
+                        {(() => { const I = MEAL_ICONS[m]; return <I aria-hidden className="size-5 text-gold-deep" />; })()}
+                        {m === "collation" ? "Collations" : MEAL_LABELS[m]}
+                      </span>
                       <span className={cn("flex size-6 items-center justify-center rounded-md border border-ink", p.meals.includes(m) && "bg-ink")}>
                         {p.meals.includes(m) && <Check aria-hidden className="size-4 text-gold" />}
                       </span>
@@ -395,6 +481,7 @@ export function Questionnaire() {
                 {(Object.keys(GOAL_LABELS) as Goal[]).map((g) => (
                   <OptionCard
                     key={g}
+                    icon={GOAL_ICONS[g]}
                     selected={p.goal === g}
                     onSelect={() => set({ goal: g, targets: defaultTargets(g), portionFactor: g === "prise-muscle" ? 1.5 : 1 })}
                     title={GOAL_LABELS[g]}
@@ -433,10 +520,29 @@ export function Questionnaire() {
             )}
           </div>
         </div>
+        <aside aria-label="Aperçu de vos recettes" className="hidden lg:block">
+          <div className="sticky top-28 rounded-[2rem] bg-ink p-6 text-paper">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-gold-light">Aperçu en direct</p>
+            <p className="mt-2 font-display text-4xl" aria-live="polite">
+              {compatibleCount.toLocaleString("fr-CA")}
+            </p>
+            <p className="text-sm text-paper/70">recettes compatibles avec vos réponses</p>
+            <div className="mt-5 grid grid-cols-2 gap-2">
+              {preview.map((r) => (
+                <figure key={r.id} className="overflow-hidden rounded-2xl bg-paper">
+                  <RecipeImage recipe={r} variant="thumb" className="aspect-square w-full" />
+                  <figcaption className="px-2 py-1.5 text-[0.7rem] leading-tight text-ink">
+                    <span className="line-clamp-2">{r.name}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </aside>
       </main>
 
       <footer className="fixed inset-x-0 bottom-0 border-t border-line bg-surface/95 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-4">
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4">
           <p className="hidden flex-1 text-sm font-semibold text-ink-muted sm:block" aria-live="polite">
             <span className="font-display text-lg font-semibold text-ink">{compatibleCount}</span> recettes compatibles
           </p>

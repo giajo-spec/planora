@@ -1,8 +1,9 @@
 # PLANORA
 
-Application web de planification alimentaire : questionnaire de profil, plan de 7 jours,
-catalogue de recettes internationales, liste d'épicerie intelligente, cuisine guidée pas à pas
-et section « En forme ». Conçue **téléphone d'abord**, en français (Québec), unités métriques.
+Application web de planification alimentaire : 3 formules (Personnalisé, Famille, En forme),
+questionnaire de profil, plan de 7 jours, **plus de 2 000 recettes** illustrées, liste d'épicerie
+intelligente, cuisine guidée pas à pas et section « En forme ». Conçue **téléphone d'abord**,
+en français (Québec), unités métriques.
 
 Stack : Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 3 · Vitest.
 
@@ -55,12 +56,35 @@ npm run typecheck    # vérification TypeScript
 
 **Découvrir l'application** charge un profil de démonstration (famille de 4) sans écraser un profil existant.
 
+## Recettes : signatures + moteur de composition
+
+- **22 recettes signatures** écrites à la main (`src/lib/data/recipes/`).
+- **Environ 1 990 recettes composées** par le moteur `src/lib/data/generator/` : bols, sautés au wok, pâtes,
+  tacos et wraps, plaques au four, soupes-repas, salades-repas, frittatas et muffins aux œufs, gruaux,
+  poudings de chia, smoothies, parfaits, tartines, collations et **spéciaux enfants** (pizzas tortillas,
+  croquettes au four, quesadillas, mini-boulettes, crêpes banane-avoine, brochettes de fruits).
+- Chaque recette composée combine des briques normalisées (protéine, féculent, légumes, saveur du monde) :
+  elle hérite des allergènes et de la nutrition de ses ingrédients, ses étapes ont leurs minuteries et
+  son guide « Je n'ai jamais cuisiné ça ». Les identifiants sont stables (un plan sauvegardé retrouve
+  ses recettes).
+- Aucune recette ni photo n'est copiée d'un site tiers (droits d'auteur, et impossibilité de garantir
+  les allergènes d'un texte libre).
+- Collections : Signatures, Pour les enfants, En famille, Riches en protéines, Express, Végétarien,
+  Végétalien, À préparer d'avance, Avant et Après l'entraînement.
+
+## Formules d'abonnement
+
+`src/lib/subscriptions.ts` : **Personnalisé** (9,99 $), **Famille** (14,99 $), **En forme** (12,99 $),
+tarifs indicatifs. Le paiement n'est pas activé : choisir une formule applique ses réglages recommandés
+et change réellement les priorités du planificateur (recettes enfants, protéines, aliments aimés).
+
 ## Photos des recettes
 
 Déposez des fichiers nommés selon l'identifiant de la recette dans `public/images/recipes/`
 (ex. `poulet-tikka.jpg`). Le manifeste est régénéré automatiquement par `npm run dev`
 et `npm run build` (ou manuellement avec `npm run images`). Sans photo, un visuel de remplacement
-est affiché — jamais d'image cassée. Liste des identifiants : `src/lib/data/recipes/*.ts`.
+est affichée : une **illustration vectorielle générée** à partir des vrais ingrédients de la recette
+(bol, assiette, pâtes, soupe, verre, wraps, plaque, tartines). Jamais d'image cassée. Liste des identifiants : `src/lib/data/recipes/*.ts`.
 
 ## Organisation du code
 

@@ -33,6 +33,8 @@ export function createDemoProfile(now = new Date().toISOString()): Profile {
     meals: ["dejeuner", "diner", "souper", "collation"],
     equipment: ["four", "robot-culinaire", "melangeur"],
     likedIngredients: ["poitrine-poulet", "saumon", "avocat"],
+    subscription: "famille",
+    childrenCount: 2,
     isDemo: true,
   };
 }

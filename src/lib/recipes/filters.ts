@@ -2,6 +2,7 @@ import { INGREDIENTS } from "@/lib/data/ingredients";
 import type { Difficulty, MealType, Recipe } from "@/lib/domain/types";
 import { isHighProtein } from "@/lib/nutrition/nutrition";
 import { isDietCompatible, totalMinutes } from "./analysis";
+import { type CollectionKey, collectionByKey } from "./collections";
 
 /** Filtres du catalogue (fonction pure, testée). */
 export interface RecipeFilters {
@@ -12,6 +13,7 @@ export interface RecipeFilters {
   diet: "vegetarien" | "vegetalien" | "pescetarien" | null;
   highProtein: boolean;
   cuisine: string | null;
+  collection: CollectionKey | null;
 }
 
 export const EMPTY_FILTERS: RecipeFilters = {
@@ -22,6 +24,7 @@ export const EMPTY_FILTERS: RecipeFilters = {
   diet: null,
   highProtein: false,
   cuisine: null,
+  collection: null,
 };
 
 export function normalize(text: string): string {
@@ -35,7 +38,9 @@ function searchableText(recipe: Recipe): string {
 
 export function applyRecipeFilters<T extends Recipe>(recipes: readonly T[], f: RecipeFilters): T[] {
   const terms = normalize(f.query).split(/\s+/).filter(Boolean);
+  const collection = collectionByKey(f.collection);
   return recipes.filter((r) => {
+    if (collection && !collection.test(r)) return false;
     if (f.meal && !r.mealTypes.includes(f.meal)) return false;
     if (f.maxMinutes != null && totalMinutes(r) > f.maxMinutes) return false;
     if (f.difficulty && r.difficulty !== f.difficulty) return false;
@@ -51,5 +56,5 @@ export function applyRecipeFilters<T extends Recipe>(recipes: readonly T[], f: R
 }
 
 export function activeFilterCount(f: RecipeFilters): number {
-  return [f.meal, f.maxMinutes, f.difficulty, f.diet, f.highProtein || null, f.cuisine].filter((v) => v != null).length;
+  return [f.meal, f.maxMinutes, f.difficulty, f.diet, f.highProtein || null, f.cuisine, f.collection].filter((v) => v != null).length;
 }

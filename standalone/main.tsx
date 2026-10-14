@@ -8,6 +8,7 @@ import { FitnessView } from "@/components/fitness/fitness-view";
 import { GroceryView } from "@/components/grocery/grocery-view";
 import { AppShell } from "@/components/layout/app-shell";
 import { PlanView } from "@/components/plan/plan-view";
+import { PricingView } from "@/components/pricing/pricing-view";
 import { ProfileView } from "@/components/profile/profile-view";
 import { Questionnaire } from "@/components/questionnaire/questionnaire";
 import { RecipeCatalog } from "@/components/recipe/recipe-catalog";
@@ -25,6 +26,7 @@ const TITLES: Record<string, string> = {
   "/epicerie": "Liste d'épicerie",
   "/profil": "Profil",
   "/en-forme": "En forme",
+  "/abonnements": "Formules",
   "/questionnaire": "Mon profil alimentaire",
 };
 
@@ -47,6 +49,8 @@ function resolve(pathname: string): { element: React.ReactNode; title?: string }
       return { element: shell(<ProfileView />) };
     case "/en-forme":
       return { element: shell(<FitnessView />) };
+    case "/abonnements":
+      return { element: shell(<PricingView />) };
   }
   const recipe = pathname.match(/^\/recettes\/([\w-]+)$/);
   if (recipe && getRecipe(recipe[1])) return { element: shell(<RecipeDetail recipeId={recipe[1]} />), title: getRecipe(recipe[1])!.name };

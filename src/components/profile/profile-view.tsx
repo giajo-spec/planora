@@ -22,6 +22,7 @@ import {
 import type { Profile } from "@/lib/domain/types";
 import { formatMinutes } from "@/components/recipe/recipe-meta";
 import { useApp } from "@/lib/state/app-store";
+import { planOffer } from "@/lib/subscriptions";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -44,7 +45,7 @@ const FUTURE = [
   { icon: LogIn, title: "Compte utilisateur", text: "Connexion par courriel (Supabase Auth). Remplacera le stockage local via un autre StorageAdapter." },
   { icon: Cloud, title: "Sauvegarde et synchronisation", text: "Vos données sur tous vos appareils (table user_state protégée par RLS)." },
   { icon: Sparkles, title: "Personnalisation par IA", text: "Planification et réponses de cuisine générées côté serveur, avec historique de vos repas." },
-  { icon: CreditCard, title: "Abonnement Premium", text: "Paiement sécurisé par Stripe Checkout, géré côté serveur." },
+  { icon: CreditCard, title: "Paiement des formules", text: "Paiement sécurisé par Stripe Checkout, géré côté serveur ; les formules sont déjà utilisables." },
   { icon: Store, title: "Prix des épiceries", text: "Prix et disponibilités de commerces locaux, via un PriceProvider serveur." },
 ];
 
@@ -64,6 +65,17 @@ function ProfileContent({ profile }: { profile: Profile }) {
           <Pencil aria-hidden className="size-4" /> {profile.isDemo ? "Créer mon profil" : "Modifier mes réponses"}
         </ButtonLink>
       </header>
+
+      <section aria-labelledby="formule" className="flex flex-col gap-4 rounded-card bg-ink p-6 text-paper sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p id="formule" className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-gold-light">Ma formule</p>
+          <p className="mt-1 font-display text-3xl">{planOffer(profile.subscription)?.name ?? "Aucune formule choisie"}</p>
+          <p className="mt-1 text-sm text-paper/70">{planOffer(profile.subscription)?.audience ?? "Personnalisé, Famille ou En forme : chaque formule adapte vos menus."}</p>
+        </div>
+        <ButtonLink href="/abonnements" variant="gold">
+          {profile.subscription ? "Changer de formule" : "Choisir ma formule"}
+        </ButtonLink>
+      </section>
 
       <section aria-labelledby="contraintes" className="rounded-card border border-ink bg-surface p-5">
         <h2 id="contraintes" className="flex items-center gap-2 text-xl font-semibold">
@@ -85,7 +97,10 @@ function ProfileContent({ profile }: { profile: Profile }) {
       <section aria-labelledby="details" className="card p-5">
         <h2 id="details" className="text-xl font-semibold">Préférences</h2>
         <dl className="mt-2 divide-y divide-line">
-          <Row label="Foyer">{profile.householdSize} personne{profile.householdSize > 1 ? "s" : ""}</Row>
+          <Row label="Foyer">
+            {profile.householdSize} personne{profile.householdSize > 1 ? "s" : ""}
+            {(profile.childrenCount ?? 0) > 0 && `, dont ${profile.childrenCount} enfant${(profile.childrenCount ?? 0) > 1 ? "s" : ""}`}
+          </Row>
           <Row label="Aime">{ingredientNames(profile.likedIngredients)}</Row>
           <Row label="Évite">{ingredientNames(profile.dislikedIngredients)}</Row>
           <Row label="Niveau en cuisine">{LEVEL_LABELS[profile.cookingLevel]}</Row>

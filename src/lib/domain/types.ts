@@ -115,7 +115,11 @@ export type RecipeTag =
   | "post-entrainement"
   | "rapide"
   | "prep-avance"
-  | "familial";
+  | "familial"
+  | "enfants";
+
+/** Style de l'illustration générée quand aucune photo n'est disponible. */
+export type Illustration = "bol" | "assiette" | "pates" | "soupe" | "verre" | "wrap" | "plaque" | "tartine" | "pot";
 
 export interface StepTimer {
   label: string;
@@ -177,6 +181,9 @@ export interface Recipe {
   tips: string[];
   substitutions: Substitution[];
   firstTime: FirstTimeGuide;
+  illustration?: Illustration;
+  /** Recette composée par le moteur de génération (src/lib/data/generator). */
+  generated?: boolean;
 }
 
 /* ------------------------------------------------------------------ */
@@ -200,6 +207,8 @@ export type CookingLevel = "debutant" | "intermediaire" | "avance";
 /** Temps maximal souhaité par repas, en minutes. */
 export type TimeBudget = 15 | 30 | 45 | 60 | 90;
 export type NutritionFocus = "proteines" | "calories" | "glucides" | "lipides";
+/** Formules d'abonnement PLANORA. */
+export type SubscriptionPlan = "personnalise" | "famille" | "en-forme";
 
 export interface NutritionTargets {
   kcal: number;
@@ -228,6 +237,10 @@ export interface Profile {
   targets: NutritionTargets;
   /** Facteur de portion de l'utilisateur principal (sportif : 1,5). */
   portionFactor: number;
+  /** Formule choisie (aucun paiement n'est activé dans ce prototype). */
+  subscription?: SubscriptionPlan;
+  /** Nombre d'enfants dans le foyer (favorise les recettes « enfants »). */
+  childrenCount?: number;
   /** Profil généré par « Découvrir l'application ». */
   isDemo?: boolean;
   createdAt: string;

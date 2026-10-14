@@ -3,7 +3,12 @@ import type { Allergen, AnimalCategory, Diet, Equipment, Recipe, Restriction } f
 
 /** Analyse d'une recette à partir de ses ingrédients (fonctions pures). */
 
+const allergenCache = new WeakMap<Recipe, Allergen[]>();
+const animalCache = new WeakMap<Recipe, AnimalCategory[]>();
+
 export function recipeAllergens(recipe: Recipe): Allergen[] {
+  const cached = allergenCache.get(recipe);
+  if (cached) return cached;
   const set = new Set<Allergen>();
   for (const line of recipe.ingredients) {
     const ingredient = INGREDIENTS[line.ingredientId];
@@ -11,16 +16,22 @@ export function recipeAllergens(recipe: Recipe): Allergen[] {
     if (!ingredient) throw new Error(`Ingrédient inconnu dans ${recipe.id} : ${line.ingredientId}`);
     ingredient.allergens.forEach((a) => set.add(a));
   }
-  return [...set];
+  const result = [...set];
+  allergenCache.set(recipe, result);
+  return result;
 }
 
 export function recipeAnimals(recipe: Recipe): AnimalCategory[] {
+  const cached = animalCache.get(recipe);
+  if (cached) return cached;
   const set = new Set<AnimalCategory>();
   for (const line of recipe.ingredients) {
     const animal = INGREDIENTS[line.ingredientId]?.animal;
     if (animal) set.add(animal);
   }
-  return [...set];
+  const result = [...set];
+  animalCache.set(recipe, result);
+  return result;
 }
 
 const FORBIDDEN_BY_DIET: Record<Diet, AnimalCategory[]> = {

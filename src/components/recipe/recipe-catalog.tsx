@@ -1,18 +1,55 @@
 "use client";
 
-import { Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDown, Search, ShieldCheck, SlidersHorizontal, X } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Chip, EmptyState, EstimateNote } from "@/components/ui/primitives";
 import { Sheet } from "@/components/ui/sheet";
-import { RECIPES } from "@/lib/data/recipes";
+import { RECIPES, RECIPE_MAP } from "@/lib/data/recipes";
 import { DIFFICULTY_LABELS, MEAL_LABELS } from "@/lib/domain/labels";
 import type { Difficulty, MealType } from "@/lib/domain/types";
 import { hardConstraintsOf } from "@/lib/planner/planner";
 import { filterAllowedRecipes } from "@/lib/recipes/analysis";
+import { COLLECTIONS, type CollectionKey, collectionByKey } from "@/lib/recipes/collections";
 import { EMPTY_FILTERS, activeFilterCount, applyRecipeFilters, type RecipeFilters } from "@/lib/recipes/filters";
 import { useApp } from "@/lib/state/app-store";
 import { RecipeCard } from "./recipe-card";
+import { RecipeImage } from "./recipe-image";
+import { cn } from "@/lib/utils/cn";
+
+const PAGE = 24;
+const nf = new Intl.NumberFormat("fr-CA");
+
+/** Rangée de collections illustrées (défilement horizontal). */
+export function CollectionRail({ active, onSelect }: { active: CollectionKey | null; onSelect: (key: CollectionKey | null) => void }) {
+  return (
+    <div className="scrollbar-none -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10" role="group" aria-label="Collections">
+      {COLLECTIONS.map((c) => {
+        const selected = active === c.key;
+        const cover = RECIPE_MAP[c.coverId];
+        return (
+          <button
+            key={c.key}
+            type="button"
+            aria-pressed={selected}
+            onClick={() => onSelect(selected ? null : c.key)}
+            className={cn(
+              "group relative flex w-44 shrink-0 snap-start flex-col justify-start overflow-hidden rounded-3xl border bg-surface text-left transition sm:w-52",
+              selected ? "border-gold shadow-gold ring-2 ring-gold" : "border-line hover:-translate-y-0.5 hover:shadow-card",
+            )}
+          >
+            {cover && <RecipeImage recipe={cover} variant="thumb" className="aspect-[4/3] w-full transition duration-500 group-hover:scale-[1.04]" />}
+            <span className="block flex-1 px-3 py-2.5">
+              <span className="block font-display text-[1.05rem] leading-tight">{c.title}</span>
+              <span className="line-clamp-1 block text-xs text-ink-muted">{c.subtitle}</span>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 const CUISINES = [...new Set(RECIPES.map((r) => r.cuisine))].sort((a, b) => a.localeCompare(b, "fr-CA"));
 const MEALS: MealType[] = ["dejeuner", "diner", "souper", "collation"];
@@ -75,7 +112,14 @@ function FilterPanel({ filters, set }: { filters: RecipeFilters; set: (patch: Pa
 
 export function RecipeCatalog() {
   const { profile } = useApp();
-  const [filters, setFilters] = useState<RecipeFilters>(EMPTY_FILTERS);
+  const params = useSearchParams();
+  const initialCollection = collectionByKey(params.get("collection"))?.key ?? null;
+  const [filters, setFiltersState] = useState<RecipeFilters>({ ...EMPTY_FILTERS, collection: initialCollection });
+  const [visible, setVisible] = useState(PAGE);
+  const setFilters = (next: RecipeFilters | ((f: RecipeFilters) => RecipeFilters)) => {
+    setFiltersState(next);
+    setVisible(PAGE);
+  };
   const [sheetOpen, setSheetOpen] = useState(false);
   const set = (patch: Partial<RecipeFilters>) => setFilters((f) => ({ ...f, ...patch }));
 
@@ -90,10 +134,15 @@ export function RecipeCatalog() {
 
   return (
     <div className="page">
-      <header className="mb-5">
-        <p className="eyebrow">{RECIPES.length} recettes · {CUISINES.length} cuisines</p>
-        <h1 className="text-display-lg">Recettes</h1>
+      <header className="mb-6">
+        <p className="eyebrow">{CUISINES.length} cuisines du monde</p>
+        <h1 className="text-display-lg">
+          <span className="text-gold-deep">{nf.format(RECIPES.length)}</span> recettes
+        </h1>
+        <p className="mt-2 max-w-2xl text-ink-soft">Pour les enfants, la famille, la salle de sport ou les soirs pressés — chacune adaptée à vos allergies et à vos portions.</p>
       </header>
+
+      <CollectionRail active={filters.collection} onSelect={(collection) => set({ collection })} />
 
       <div className="sticky top-0 z-20 -mx-4 bg-paper/95 px-4 pb-3 pt-2 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
         <div className="flex gap-2">
@@ -139,7 +188,8 @@ export function RecipeCatalog() {
 
         <div>
           <p className="mb-3 text-sm font-semibold text-ink-muted" aria-live="polite">
-            {results.length} recette{results.length > 1 ? "s" : ""}
+            {filters.collection && <span className="mr-2 font-display text-base text-ink">{collectionByKey(filters.collection)?.title} ·</span>}
+            {nf.format(results.length)} recette{results.length > 1 ? "s" : ""}
             {hiddenBySafety > 0 && (
               <span className="ml-2 inline-flex items-center gap-1 text-sage-deep">
                 <ShieldCheck aria-hidden className="size-4" /> {hiddenBySafety} masquée{hiddenBySafety > 1 ? "s" : ""} selon vos allergies et votre régime
@@ -159,12 +209,22 @@ export function RecipeCatalog() {
             </EmptyState>
           ) : (
             <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {results.map((r) => (
+              {results.slice(0, visible).map((r) => (
                 <li key={r.id} className="flex">
                   <RecipeCard recipe={r} className="w-full" />
                 </li>
               ))}
             </ul>
+          )}
+          {results.length > visible && (
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <p className="text-sm text-ink-muted">
+                {nf.format(visible)} sur {nf.format(results.length)}
+              </p>
+              <Button variant="secondary" onClick={() => setVisible((v) => v + PAGE * 2)}>
+                <ChevronDown aria-hidden className="size-4" /> Afficher plus de recettes
+              </Button>
+            </div>
           )}
           <EstimateNote className="mt-6" />
         </div>
@@ -180,7 +240,7 @@ export function RecipeCatalog() {
               Effacer
             </Button>
             <Button className="flex-1" onClick={() => setSheetOpen(false)}>
-              Voir {results.length} recette{results.length > 1 ? "s" : ""}
+              Voir {nf.format(results.length)} recette{results.length > 1 ? "s" : ""}
             </Button>
           </div>
         }

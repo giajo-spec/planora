@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { RECIPES } from "@/lib/data/recipes";
+import { nutritionPerServing } from "@/lib/nutrition/nutrition";
 import { createDemoProfile } from "@/lib/profile/defaults";
 import {
   addDays,
@@ -150,3 +151,28 @@ describe("édition du plan", () => {
     expect(findMeal(next, b.id)!.meal.slot).toBe("diner");
   });
 });
+
+describe("formules d'abonnement", () => {
+  const recipeOf = (id: string) => RECIPES.find((r) => r.id === id)!;
+  const share = (plan: ReturnType<typeof generatePlan>, test: (id: string) => boolean) => {
+    const ids = plan.days.flatMap((d) => d.meals.map((m) => m.recipeId));
+    return ids.filter(test).length / ids.length;
+  };
+
+  it("la formule Famille priorise les recettes pour enfants", () => {
+    const base = generatePlan({ profile: { ...profile, subscription: "personnalise", childrenCount: 0 }, recipes: RECIPES }, { startDate: "2026-01-05", seed: 3 });
+    const family = generatePlan({ profile: { ...profile, subscription: "famille", childrenCount: 2 }, recipes: RECIPES }, { startDate: "2026-01-05", seed: 3 });
+    const kids = (id: string) => recipeOf(id).tags.includes("enfants");
+    expect(share(family, kids)).toBeGreaterThan(share(base, kids));
+    expect(share(family, kids)).toBeGreaterThan(0.6);
+  });
+
+  it("la formule En forme augmente les protéines du plan", () => {
+    const protein = (plan: ReturnType<typeof generatePlan>) =>
+      plan.days.flatMap((d) => d.meals).reduce((acc, m) => acc + nutritionPerServing(recipeOf(m.recipeId)).protein, 0);
+    const base = generatePlan({ profile: { ...profile, subscription: "personnalise" }, recipes: RECIPES }, { startDate: "2026-01-05", seed: 4 });
+    const fit = generatePlan({ profile: { ...profile, subscription: "en-forme" }, recipes: RECIPES }, { startDate: "2026-01-05", seed: 4 });
+    expect(protein(fit)).toBeGreaterThan(protein(base));
+  });
+});
+
