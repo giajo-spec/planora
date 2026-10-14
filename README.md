@@ -35,6 +35,11 @@ navigation passe par l'adresse (`#/plan`, `#/recettes/poulet-tikka`…) et les d
 sauvegardées dans le navigateur. Les photos de recettes, si présentes, doivent se trouver dans
 `images/recipes/` à côté du fichier.
 
+Sur téléphone, un fichier HTML reçu en pièce jointe s'ouvre souvent dans un aperçu qui n'exécute pas
+JavaScript (écran vide). Pour tester sur mobile, utilisez un lien web : `dist/planora-web.html` est la
+même application, sans les balises `<html>`/`<head>`/`<body>`, prête à être publiée chez un hébergeur
+qui les ajoute (ou servez `dist/planora.html` avec `npx serve dist`).
+
 ## Vérifier
 
 ```bash

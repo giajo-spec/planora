@@ -65,6 +65,17 @@ const html = `<!doctype html>
 `;
 
 mkdirSync(join(root, "dist"), { recursive: true });
+
+// Variante « page web » (sans <html>/<head>/<body>, ajoutés par l'hébergeur) :
+// ouvrable depuis un téléphone via un simple lien.
+const page = `<title>PLANORA</title>
+<meta name="description" content="Planification de repas personnalisée, recettes du monde, liste d'épicerie automatique et cuisine guidée.">
+<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(icon)}">
+<style>${fonts}${css.css}</style>
+<div id="root"></div>
+<script>${js}</script>
+`;
+writeFileSync(join(root, "dist", "planora-web.html"), page);
 const out = join(root, "dist", "planora.html");
 writeFileSync(out, html);
 console.log(`[html] ${out} (${(Buffer.byteLength(html) / 1024).toFixed(0)} Ko)`);
