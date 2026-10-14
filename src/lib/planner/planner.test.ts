@@ -50,6 +50,22 @@ describe("génération du plan", () => {
     expect(ids.size).toBeGreaterThanOrEqual(12);
   });
 
+  it("varie les types de plats (pas que des bols et des sautés)", () => {
+    for (const seed of [1, 2, 3]) {
+      const plan = generatePlan(ctx, { startDate: "2026-01-05", seed });
+      const families = plan.days.flatMap((d) => d.meals.map((m) => RECIPES.find((r) => r.id === m.recipeId)!)).map((r) => r.family ?? r.id);
+      const counts = new Map<string, number>();
+      families.forEach((f) => counts.set(f, (counts.get(f) ?? 0) + 1));
+      expect(counts.size, `graine ${seed}`).toBeGreaterThanOrEqual(12);
+      expect(Math.max(...counts.values()) / families.length, `graine ${seed}`).toBeLessThanOrEqual(0.2);
+      // jamais deux fois le même type de plat dans une journée (hors collations)
+      for (const day of plan.days) {
+        const mains = day.meals.filter((m) => m.slot !== "collation").map((m) => RECIPES.find((r) => r.id === m.recipeId)!.family);
+        expect(new Set(mains).size, `graine ${seed}`).toBe(mains.length);
+      }
+    }
+  });
+
   it("utilise la taille du foyer comme portions", () => {
     expect(defaultServings(profile)).toBe(4);
     expect(defaultServings({ ...profile, householdSize: 1, portionFactor: 1.5 })).toBe(1.5);

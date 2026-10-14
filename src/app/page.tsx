@@ -34,13 +34,13 @@ const FEATURES = [
 const SHOWCASE = [
   { id: "poulet-tikka", label: "Signature" },
   { id: "pizzas-tortillas-epinards-tomates", label: "Pour les enfants" },
+  { id: "cari-coco-doux-pois-chiches-patate-douce", label: "Cari mijoté" },
+  { id: "burger-boeuf-classique-frites-patate", label: "Burger maison" },
+  { id: "brochettes-souvlaki-poulet-riz", label: "Brochettes" },
+  { id: "gratin-tomate-mozza-poulet-brocoli", label: "Gratin" },
+  { id: "papillote-saumon-citron-herbes-asperges", label: "Papillote" },
   { id: "bol-teriyaki-saumon-riz-jasmin-brocoli-carotte", label: "Riche en protéines" },
-  { id: "soupe-coco-cari-lentilles-kale-patate", label: "Végétalien" },
   { id: "smoothie-mangue-ananas-yogourt-lait", label: "Après l'entraînement" },
-  { id: "tacos-mexicain-morue", label: "En famille" },
-  { id: "pates-penne-pesto-poulet-asperges-pois", label: "Express" },
-  { id: "plaque-provence-saumon-pdt-haricots", label: "Une seule plaque" },
-  { id: "parfait-yogourt-petits-fruits-avoine-erable", label: "Collation" },
 ];
 
 export default function LandingPage() {

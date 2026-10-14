@@ -43,6 +43,7 @@ const BACKGROUND: Record<string, string> = {
   Indienne: "#F7ECD2", "Moyen-orientale": "#F4E2D7", Méditerranéenne: "#E2E9EF", Suisse: "#ECE4D5", Mexicaine: "#E4EBDE",
   Marocaine: "#F4E2D7", Grecque: "#E2E9EF", Libanaise: "#E4EBDE", Italienne: "#F4E2D7", Hawaïenne: "#EEE3EC", Japonaise: "#ECE4D5",
   Chinoise: "#F2E8D5", Thaïlandaise: "#E4EBDE", Coréenne: "#EEE3EC", "Nord-américaine": "#F2E8D5", Québécoise: "#F2E8D5", Française: "#E2E9EF",
+  Argentine: "#E4EBDE", Indonésienne: "#F4E2D7",
 };
 
 const MINOR = /^(sel|poivre|huile|vinaigre|fecule|cassonade|bicarbonate|origan|cumin|curcuma|paprika|garam|cannelle|herbes|piment|assaisonnement|coriandre-moulue|curry|ail|gingembre|sauce-|sirop|miel|moutarde|bouillon)/;
@@ -308,6 +309,104 @@ function Pot({ p, rng }: { p: Palette; rng: () => number }) {
   );
 }
 
+function Cocotte({ p, rng }: { p: Palette; rng: () => number }) {
+  const cx = 200, cy = 152, R = 108;
+  return (
+    <g>
+      <Shadow cx={cx} cy={cy} r={R} />
+      <rect x={cx - R - 34} y={cy - 14} width={44} height={28} rx={14} fill="#2C2820" />
+      <rect x={cx + R - 10} y={cy - 14} width={44} height={28} rx={14} fill="#2C2820" />
+      <circle cx={cx} cy={cy} r={R} fill="#2C2820" />
+      <circle cx={cx} cy={cy} r={R - 6} fill="none" stroke="#C6A46C" strokeWidth={1.2} opacity={0.8} />
+      <circle cx={cx} cy={cy} r={R - 14} fill={p.sauce} />
+      <circle cx={cx} cy={cy} r={R - 14} fill={shade(p.sauce, -0.1)} opacity={0.25} />
+      {pieces(rng, 26, cx, cy, 8, R - 28).map((q, i) => {
+        const c = p.main[i % p.main.length];
+        return <rect key={i} x={q.x - 9 * q.s} y={q.y - 7 * q.s} width={18 * q.s} height={14 * q.s} rx={6 * q.s} transform={`rotate(${q.rot} ${q.x} ${q.y})`} fill={c} stroke={shade(c, -0.15)} strokeWidth={0.8} />;
+      })}
+      <Sprinkles rng={rng} color={p.green} cx={cx} cy={cy} r={R - 30} n={22} />
+    </g>
+  );
+}
+
+function Burger({ p, rng }: { p: Palette; rng: () => number }) {
+  const x = 200;
+  const meat = p.main[0];
+  return (
+    <g>
+      <ellipse cx={x + 6} cy={262} rx={120} ry={12} fill="#16140F" opacity={0.08} />
+      <rect x={x - 110} y={222} width={220} height={30} rx={14} fill="#D9A15A" />
+      <path d={`M ${x - 112} 214 q 28 -16 56 0 t 56 0 t 56 0 t 56 0 v 10 h -224 Z`} fill={p.green} />
+      <rect x={x - 104} y={176} width={208} height={40} rx={18} fill={meat} stroke={shade(meat, -0.18)} strokeWidth={1.5} />
+      <path d={`M ${x - 100} 176 L ${x + 100} 176 L ${x + 70} 196 L ${x + 40} 178 L ${x} 198 L ${x - 40} 178 L ${x - 80} 196 Z`} fill={p.main[1] ?? "#F0A93B"} opacity={0.95} />
+      <rect x={x - 96} y={160} width={192} height={16} rx={8} fill={p.main[2] ?? "#D9483B"} />
+      <path d={`M ${x - 112} 160 Q ${x - 110} 70 ${x} 66 Q ${x + 110} 70 ${x + 112} 160 Z`} fill="#D9A15A" />
+      <path d={`M ${x - 112} 160 Q ${x - 110} 70 ${x} 66 Q ${x + 110} 70 ${x + 112} 160`} fill="none" stroke={shade("#D9A15A", -0.15)} strokeWidth={1.5} />
+      {pieces(rng, 18, x, 108, 10, 70, Math.PI * 1.05, Math.PI * 1.95).map((q, i) => (
+        <ellipse key={i} cx={q.x} cy={q.y + 30} rx={3.2} ry={1.8} transform={`rotate(${q.rot} ${q.x} ${q.y + 30})`} fill="#FBF3E0" />
+      ))}
+    </g>
+  );
+}
+
+function Skewers({ p, rng }: { p: Palette; rng: () => number }) {
+  const cx = 200, cy = 150;
+  return (
+    <g>
+      <Shadow cx={cx} cy={cy} r={118} />
+      <circle cx={cx} cy={cy} r={118} fill="#FFFDF8" />
+      <circle cx={cx} cy={cy} r={114} fill="none" stroke="#C6A46C" strokeWidth={1} opacity={0.7} />
+      {[-38, 0, 38].map((dy, k) => (
+        <g key={k} transform={`rotate(-14 ${cx} ${cy + dy})`}>
+          <line x1={cx - 115} y1={cy + dy} x2={cx + 115} y2={cy + dy} stroke="#B98249" strokeWidth={4} strokeLinecap="round" />
+          {Array.from({ length: 6 }, (_, i) => {
+            const c = i % 2 ? p.main[(k + 1) % p.main.length] ?? p.main[0] : p.main[0];
+            const px = cx - 80 + i * 32;
+            return <rect key={i} x={px - 13} y={cy + dy - 13 + rng() * 2} width={26} height={26} rx={8} fill={c} stroke={shade(c, -0.15)} strokeWidth={1} />;
+          })}
+        </g>
+      ))}
+      <Sprinkles rng={rng} color={p.green} cx={cx} cy={cy} r={90} n={14} />
+    </g>
+  );
+}
+
+function Papillote({ p, rng }: { p: Palette; rng: () => number }) {
+  const cx = 200, cy = 158;
+  return (
+    <g>
+      <ellipse cx={cx + 8} cy={cy + 16} rx={140} ry={92} fill="#16140F" opacity={0.08} />
+      <path d={`M ${cx - 150} ${cy} Q ${cx - 130} ${cy - 95} ${cx} ${cy - 100} Q ${cx + 130} ${cy - 95} ${cx + 150} ${cy} Q ${cx + 130} ${cy + 95} ${cx} ${cy + 100} Q ${cx - 130} ${cy + 95} ${cx - 150} ${cy} Z`} fill="#F4EBDA" stroke="#D9C9A8" strokeWidth={2} />
+      <path d={`M ${cx - 140} ${cy} Q ${cx} ${cy - 20} ${cx + 140} ${cy}`} fill="none" stroke="#D9C9A8" strokeWidth={1.5} strokeDasharray="3 5" />
+      {pieces(rng, 12, cx, cy, 30, 70).map((q, i) => (
+        <ellipse key={i} cx={q.x} cy={q.y} rx={12 * q.s} ry={6 * q.s} transform={`rotate(${q.rot} ${q.x} ${q.y})`} fill={p.main[(i % Math.max(1, p.main.length - 1)) + 1] ?? p.main[0]} />
+      ))}
+      <ellipse cx={cx} cy={cy} rx={62} ry={30} fill={p.main[0]} stroke={shade(p.main[0], -0.15)} strokeWidth={1.2} />
+      <path d={`M ${cx - 40} ${cy - 8} q 20 10 40 0 t 40 0`} fill="none" stroke={shade(p.main[0], -0.12)} strokeWidth={2} opacity={0.7} />
+      <circle cx={cx + 30} cy={cy - 18} r={11} fill="#F3DB5A" stroke="#FFFDF8" strokeWidth={2} />
+      <Sprinkles rng={rng} color={p.green} cx={cx} cy={cy} r={60} n={12} />
+    </g>
+  );
+}
+
+function Gratin({ p, rng }: { p: Palette; rng: () => number }) {
+  return (
+    <g>
+      <rect x={56} y={66} width={300} height={190} rx={34} fill="#16140F" opacity={0.08} />
+      <rect x={48} y={56} width={304} height={190} rx={34} fill="#FFFDF8" stroke="#C6A46C" strokeWidth={1.5} />
+      <rect x={66} y={74} width={268} height={154} rx={22} fill="#EDC27A" />
+      {pieces(rng, 30, 200, 151, 0, 120).map((q, i) => {
+        const x = Math.min(318, Math.max(82, q.x)), y = Math.min(214, Math.max(88, 151 + (q.y - 151) * 0.55));
+        return <ellipse key={i} cx={x} cy={y} rx={9 * q.s} ry={6 * q.s} fill={i % 3 ? "#C9853E" : p.sauce} opacity={i % 3 ? 0.55 : 0.8} />;
+      })}
+      {pieces(rng, 10, 200, 151, 0, 100).map((q, i) => (
+        <circle key={`v${i}`} cx={Math.min(318, Math.max(82, q.x))} cy={Math.min(214, Math.max(88, 151 + (q.y - 151) * 0.55))} r={5} fill={p.main[i % p.main.length]} />
+      ))}
+      <Sprinkles rng={rng} color={p.green} cx={200} cy={151} r={80} n={10} />
+    </g>
+  );
+}
+
 export function illustrationBackground(recipe: Pick<Recipe, "cuisine">): string {
   return BACKGROUND[recipe.cuisine] ?? "#F2E8D5";
 }
@@ -331,6 +430,11 @@ export function FoodIllustration({ recipe, className, fit = "slice" }: { recipe:
       {style === "plaque" && <SheetPan p={p} rng={rng} />}
       {style === "tartine" && <Toasts p={p} rng={rng} />}
       {style === "pot" && <Pot p={p} rng={rng} />}
+      {style === "cocotte" && <Cocotte p={p} rng={rng} />}
+      {style === "burger" && <Burger p={p} rng={rng} />}
+      {style === "brochettes" && <Skewers p={p} rng={rng} />}
+      {style === "papillote" && <Papillote p={p} rng={rng} />}
+      {style === "gratin" && <Gratin p={p} rng={rng} />}
     </svg>
   );
 }

@@ -1,6 +1,7 @@
 import type { Difficulty, Equipment, Illustration, MealType, Recipe, RecipeIngredient, RecipeTag, Substitution } from "@/lib/domain/types";
 import { ing } from "../recipes/helpers";
 import { type DraftStep, assemble, capitalize, frenchList, roundTo5, slug, timer } from "./builder";
+import { moreFormats } from "./formats-more";
 import {
   BASE_SAFETY,
   FLAVORS,
@@ -21,18 +22,18 @@ import {
 /* ------------------------------------------------------------------ */
 
 const LEVEL: Difficulty[] = ["facile", "moyen", "avance"];
-const maxDifficulty = (...d: Difficulty[]) => LEVEL[Math.max(...d.map((x) => LEVEL.indexOf(x)))];
+export const maxDifficulty = (...d: Difficulty[]) => LEVEL[Math.max(...d.map((x) => LEVEL.indexOf(x)))];
 
-function vegStep(veg: Veg, samePan: boolean): DraftStep {
+export function vegStep(veg: Veg, samePan: boolean): DraftStep {
   const text = samePan ? veg.cook.text : veg.cook.text.replace("Dans la même poêle", "Dans une grande poêle chaude").replace("dans la poêle chaude", "dans une poêle chaude");
   return { text, items: veg.items, minutes: veg.cook.minutes, timers: veg.cook.timers, tip: veg.cook.tip };
 }
 
-function cookingStep(c: Cooking, items: RecipeIngredient[] = []): DraftStep {
+export function cookingStep(c: Cooking, items: RecipeIngredient[] = []): DraftStep {
   return { text: c.text, items: [...items, ...(c.items ?? [])], minutes: c.minutes, timers: c.timers, tip: c.tip, faq: c.faq };
 }
 
-function guide(opts: {
+export function guide(opts: {
   utensils: string[];
   prep: string[];
   techniques: string[];
@@ -48,11 +49,11 @@ function guide(opts: {
   };
 }
 
-function subs(...list: Array<Substitution | undefined>): Substitution[] {
+export function subs(...list: Array<Substitution | undefined>): Substitution[] {
   return list.filter((s): s is Substitution => Boolean(s));
 }
 
-interface Meta {
+export interface Meta {
   id: string;
   name: string;
   description: string;
@@ -68,9 +69,11 @@ interface Meta {
   substitutions: Substitution[];
   firstTime: Recipe["firstTime"];
   illustration: Illustration;
+  /** Type de plat (bol, curry, burger…) : sert à varier le plan et le catalogue. */
+  family?: string;
 }
 
-function make(meta: Meta, steps: DraftStep[]): Recipe {
+export function make(meta: Meta, steps: DraftStep[]): Recipe {
   return assemble(
     {
       ...meta,
@@ -78,6 +81,7 @@ function make(meta: Meta, steps: DraftStep[]): Recipe {
       equipment: meta.equipment ?? [],
       tags: meta.tags ?? [],
       tips: meta.tips.filter(Boolean),
+      family: meta.family ?? meta.id.split("-")[0],
       generated: true,
     },
     steps,
@@ -133,7 +137,7 @@ function bowl(flavor: Flavor, protein: Protein, starch: Starch, veg: Veg): Recip
 /* 2. Sautés au wok                                                    */
 /* ------------------------------------------------------------------ */
 
-const WOK_PROTEINS = ["poulet", "dinde", "boeuf", "porc", "crevettes", "tofu", "tempeh", "pois-chiches"];
+const WOK_PROTEINS = ["poulet", "boeuf", "porc", "crevettes", "tofu", "tempeh"];
 
 function stirFry(flavor: Flavor, protein: Protein, starch: Starch, veg: Veg): Recipe {
   const cookP = protein.pan!;
@@ -763,17 +767,17 @@ function eggs(style: "frittata" | "muffins" | "brouilles", filling: (typeof EGG_
 const FRUITS: Array<{ key: string; label: string; items: RecipeIngredient[] }> = [
   { key: "petits-fruits", label: "petits fruits", items: [ing("petits-fruits", 200, "g")] },
   { key: "banane", label: "banane", items: [ing("banane", 2, "unite", { note: "tranchées" })] },
-  { key: "pomme-cannelle", label: "pomme et cannelle", items: [ing("pomme", 1, "unite", { note: "râpée" }), ing("cannelle", 1, "c-the")] },
+  { key: "pomme-cannelle", label: "pomme-cannelle", items: [ing("pomme", 1, "unite", { note: "râpée" }), ing("cannelle", 1, "c-the")] },
   { key: "mangue", label: "mangue", items: [ing("mangue", 1, "unite", { note: "en dés" })] },
   { key: "fraises", label: "fraises", items: [ing("fraises", 250, "g", { note: "tranchées" })] },
   { key: "bleuets", label: "bleuets", items: [ing("bleuets", 200, "g")] },
-  { key: "ananas-mangue", label: "ananas et mangue", items: [ing("ananas", 150, "g"), ing("mangue", 0.5, "unite", { note: "en dés" })] },
+  { key: "ananas-mangue", label: "ananas-mangue", items: [ing("ananas", 150, "g"), ing("mangue", 0.5, "unite", { note: "en dés" })] },
 ];
 
 const TOPPINGS: Array<{ key: string; label: string; items: RecipeIngredient[] }> = [
   { key: "beurre-arachide", label: "beurre d'arachide", items: [ing("beurre-arachide", 3, "c-soupe")] },
   { key: "amandes", label: "amandes grillées", items: [ing("amandes", 40, "g")] },
-  { key: "cacao", label: "cacao et érable", items: [ing("cacao", 2, "c-soupe"), ing("sirop-erable", 2, "c-soupe")] },
+  { key: "cacao", label: "cacao-érable", items: [ing("cacao", 2, "c-soupe"), ing("sirop-erable", 2, "c-soupe")] },
   { key: "yogourt", label: "yogourt grec", items: [ing("yogourt-grec", 200, "g")] },
 ];
 
@@ -886,7 +890,7 @@ function smoothie(fruit: (typeof SMOOTHIE_FRUITS)[number], protein: (typeof SMOO
 const CRUNCH: Array<{ key: string; label: string; items: RecipeIngredient[] }> = [
   { key: "amandes", label: "amandes effilées", items: [ing("amandes", 30, "g")] },
   { key: "avoine-erable", label: "avoine grillée à l'érable", items: [ing("flocons-avoine", 40, "g"), ing("sirop-erable", 1, "c-soupe")] },
-  { key: "chia-cacao", label: "chia et cacao", items: [ing("graines-chia", 1, "c-soupe"), ing("cacao", 1, "c-the")] },
+  { key: "chia-cacao", label: "chia-cacao", items: [ing("graines-chia", 1, "c-soupe"), ing("cacao", 1, "c-the")] },
   { key: "arachides", label: "arachides", items: [ing("arachides", 30, "g")] },
 ];
 
@@ -1316,14 +1320,14 @@ export function generateAll(): Recipe[] {
     for (const pk of BOWL_PROTEINS) {
       const protein = proteinByKey(pk);
       if (!protein.pan) continue;
-      for (const sk of flavor.starches) for (const vk of flavor.vegs) out.push(bowl(flavor, protein, STARCHES[sk], VEGS[vk]));
+      for (const sk of flavor.starches.slice(0, 2)) for (const vk of flavor.vegs.slice(0, 2)) out.push(bowl(flavor, protein, STARCHES[sk], VEGS[vk]));
     }
   }
 
   for (const flavor of FLAVORS.filter((f) => f.wok))
     for (const pk of WOK_PROTEINS)
       for (const sk of flavor.starches.filter((s) => s !== "quinoa").slice(0, 2))
-        for (const vk of flavor.vegs.filter((v) => !VEGS[v].raw)) out.push(stirFry(flavor, proteinByKey(pk), STARCHES[sk], VEGS[vk]));
+        for (const vk of flavor.vegs.filter((v) => !VEGS[v].raw).slice(0, 2)) out.push(stirFry(flavor, proteinByKey(pk), STARCHES[sk], VEGS[vk]));
 
   for (const pk of Object.keys(PASTAS))
     for (const sauce of PASTA_SAUCES) for (const prot of PASTA_PROTEINS) for (const vk of PASTA_VEGS) out.push(pasta(pk, sauce, prot, vegOf(vk)));
@@ -1351,7 +1355,7 @@ export function generateAll(): Recipe[] {
   for (const baseKey of ["yogourt", "cottage"] as const) for (const fruit of FRUITS) for (const crunch of CRUNCH) out.push(parfait(baseKey, fruit, crunch));
 
   for (const t of TOASTS) out.push(toast(t));
-  out.push(...kidsRecipes(), ...snacks());
+  out.push(...kidsRecipes(), ...snacks(), ...moreFormats());
 
   return out;
 }

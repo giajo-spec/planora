@@ -171,6 +171,7 @@ const list: Ingredient[] = [
   { id: "vinaigre-balsamique", name: "vinaigre balsamique", aisle: "epicerie-seche", allergens: ["sulfites"], nutrition: { kcal: 88, protein: 0.5, carbs: 17, fat: 0, fiber: 0 }, density: 1.06 },
   { id: "curry-poudre", name: "poudre de cari douce", aisle: "epices", allergens: [], nutrition: { kcal: 325, protein: 14, carbs: 58, fat: 14, fiber: 53 }, density: 0.45 },
   { id: "herbes-provence", name: "herbes de Provence", aisle: "epices", allergens: [], nutrition: { kcal: 260, protein: 9, carbs: 60, fat: 6, fiber: 37 }, density: 0.2 },
+  { id: "pain-burger", name: "pain à hamburger de blé", plural: "pains à hamburger de blé", aisle: "boulangerie", allergens: ["gluten"], nutrition: { kcal: 270, protein: 9, carbs: 49, fat: 4, fiber: 2.5 }, gramsPerUnit: 60, countStep: 1 },
 ];
 
 export const INGREDIENTS: Record<string, Ingredient> = Object.fromEntries(

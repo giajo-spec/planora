@@ -104,6 +104,16 @@ function mapMeal(plan: MealPlan, mealId: string, fn: (meal: PlannedMeal) => Plan
 /* Sélection et score                                                  */
 /* ------------------------------------------------------------------ */
 
+const idMaps = new WeakMap<readonly Recipe[], Map<string, Recipe>>();
+function byId(ctx: PlannerContext): Map<string, Recipe> {
+  let map = idMaps.get(ctx.recipes);
+  if (!map) {
+    map = new Map(ctx.recipes.map((r) => [r.id, r]));
+    idMaps.set(ctx.recipes, map);
+  }
+  return map;
+}
+
 /** Recettes admissibles pour un créneau : contraintes strictes uniquement. */
 export function eligibleRecipes(slot: MealType, ctx: PlannerContext): Recipe[] {
   const constraints = hardConstraintsOf(ctx.profile);
@@ -113,22 +123,51 @@ export function eligibleRecipes(slot: MealType, ctx: PlannerContext): Recipe[] {
 interface Usage {
   /** Recette → nombre d'apparitions dans la semaine. */
   week: Map<string, number>;
+  /** Type de plat (bol, cari, burger…) → apparitions dans la semaine. */
+  families: Map<string, number>;
+  /** Types de plats déjà présents le même jour. */
+  dayFamilies: Set<string>;
+  /** Cuisine du monde → apparitions dans la semaine / le même jour. */
+  cuisines: Map<string, number>;
+  dayCuisines: Set<string>;
   /** Recettes déjà présentes le même jour. */
   day: Set<string>;
   /** Recette du même créneau la veille. */
   previous?: string;
 }
 
-function usageFor(days: PlanDay[], dayIndex: number, slot: MealType, ignoreMealId?: string): Usage {
+export function familyOf(recipe: Pick<Recipe, "id" | "family">): string {
+  return recipe.family ?? recipe.id;
+}
+
+function usageFor(
+  days: PlanDay[],
+  dayIndex: number,
+  slot: MealType,
+  recipes: ReadonlyMap<string, Recipe>,
+  ignoreMealId?: string,
+): Usage {
   const week = new Map<string, number>();
+  const families = new Map<string, number>();
+  const cuisines = new Map<string, number>();
   days.forEach((day) =>
     day.meals.forEach((m) => {
-      if (m.id !== ignoreMealId) week.set(m.recipeId, (week.get(m.recipeId) ?? 0) + 1);
+      if (m.id === ignoreMealId) return;
+      week.set(m.recipeId, (week.get(m.recipeId) ?? 0) + 1);
+      const r = recipes.get(m.recipeId);
+      if (r) {
+        families.set(familyOf(r), (families.get(familyOf(r)) ?? 0) + 1);
+        cuisines.set(r.cuisine, (cuisines.get(r.cuisine) ?? 0) + 1);
+      }
     }),
   );
-  const day = new Set((days[dayIndex]?.meals ?? []).filter((m) => m.id !== ignoreMealId).map((m) => m.recipeId));
+  const todays = (days[dayIndex]?.meals ?? []).filter((m) => m.id !== ignoreMealId);
+  const day = new Set(todays.map((m) => m.recipeId));
+  const todayRecipes = todays.map((m) => recipes.get(m.recipeId)).filter((r): r is Recipe => Boolean(r));
+  const dayFamilies = new Set(todayRecipes.map(familyOf));
+  const dayCuisines = new Set(todayRecipes.filter((r) => !r.mealTypes.includes("collation")).map((r) => r.cuisine));
   const previous = days[dayIndex - 1]?.meals.find((m) => m.slot === slot)?.recipeId;
-  return { week, day, previous };
+  return { week, families, dayFamilies, cuisines, dayCuisines, day, previous };
 }
 
 export function scoreRecipe(recipe: Recipe, slot: MealType, profile: Profile, usage: Usage): number {
@@ -161,6 +200,13 @@ export function scoreRecipe(recipe: Recipe, slot: MealType, profile: Profile, us
   }
 
   score -= (usage.week.get(recipe.id) ?? 0) * 6;
+  // Variété des types de plats : pas deux bols le même jour, pas de bols tous les jours.
+  const family = familyOf(recipe);
+  score -= (usage.families.get(family) ?? 0) * 2.5;
+  if (usage.dayFamilies.has(family)) score -= 6;
+  // … et des cuisines du monde.
+  score -= (usage.cuisines.get(recipe.cuisine) ?? 0) * 0.8;
+  if (slot !== "collation" && usage.dayCuisines.has(recipe.cuisine)) score -= 2.5;
   if (usage.previous === recipe.id) score -= 4;
   return score;
 }
@@ -206,7 +252,7 @@ function fillDays(
         remainingLocked.splice(lockedIndex, 1);
         continue;
       }
-      const [best] = rankCandidates(slot, ctx, usageFor(days, dayIndex, slot), rng);
+      const [best] = rankCandidates(slot, ctx, usageFor(days, dayIndex, slot, byId(ctx)), rng);
       if (best) day.meals.push(newMeal(best, slot, ctx.profile, rng));
     }
     day.meals = sortMeals(day.meals);
@@ -246,7 +292,7 @@ export function regeneratePlan(plan: MealPlan, ctx: PlannerContext, seed: number
 export function suggestReplacements(plan: MealPlan, mealId: string, ctx: PlannerContext, limit = 6): Recipe[] {
   const found = findMeal(plan, mealId);
   if (!found) return [];
-  const usage = usageFor(plan.days, found.dayIndex, found.meal.slot, mealId);
+  const usage = usageFor(plan.days, found.dayIndex, found.meal.slot, byId(ctx), mealId);
   return rankCandidates(found.meal.slot, ctx, usage, () => 0.5, [found.meal.recipeId]).slice(0, limit);
 }
 
@@ -266,7 +312,7 @@ export function replaceMeal(
     if (!recipe) throw new Error("Cette recette ne respecte pas le profil (allergies, régime ou créneau).");
   } else {
     const rng = createRng(options.seed ?? plan.seed + 1);
-    const usage = usageFor(plan.days, dayIndex, meal.slot, mealId);
+    const usage = usageFor(plan.days, dayIndex, meal.slot, byId(ctx), mealId);
     recipe = rankCandidates(meal.slot, ctx, usage, rng, [meal.recipeId])[0];
   }
   if (!recipe) return plan;
@@ -288,7 +334,7 @@ export function addMeal(
     recipe = eligibleRecipes(slot, ctx).find((r) => r.id === options.recipeId);
     if (!recipe) throw new Error("Cette recette ne respecte pas le profil (allergies, régime ou créneau).");
   } else {
-    recipe = rankCandidates(slot, ctx, usageFor(plan.days, dayIndex, slot), rng)[0];
+    recipe = rankCandidates(slot, ctx, usageFor(plan.days, dayIndex, slot, byId(ctx)), rng)[0];
   }
   if (!recipe) return plan;
   const meal = newMeal(recipe, slot, ctx.profile, rng);

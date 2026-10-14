@@ -119,7 +119,21 @@ export type RecipeTag =
   | "enfants";
 
 /** Style de l'illustration générée quand aucune photo n'est disponible. */
-export type Illustration = "bol" | "assiette" | "pates" | "soupe" | "verre" | "wrap" | "plaque" | "tartine" | "pot";
+export type Illustration =
+  | "bol"
+  | "assiette"
+  | "pates"
+  | "soupe"
+  | "verre"
+  | "wrap"
+  | "plaque"
+  | "tartine"
+  | "pot"
+  | "cocotte"
+  | "burger"
+  | "brochettes"
+  | "papillote"
+  | "gratin";
 
 export interface StepTimer {
   label: string;
@@ -182,6 +196,8 @@ export interface Recipe {
   substitutions: Substitution[];
   firstTime: FirstTimeGuide;
   illustration?: Illustration;
+  /** Type de plat (bol, curry, burger…) : sert à varier le plan et le catalogue. */
+  family?: string;
   /** Recette composée par le moteur de génération (src/lib/data/generator). */
   generated?: boolean;
 }

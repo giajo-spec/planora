@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { RECIPES } from "@/lib/data/recipes";
+import { RECIPE_MAP } from "@/lib/data/recipes";
 import { isDietCompatible } from "@/lib/recipes/analysis";
+import { COLLECTIONS } from "@/lib/recipes/collections";
 
 describe("cohérence des recettes", () => {
   it("contient environ 20 recettes aux identifiants uniques", () => {
@@ -66,5 +68,13 @@ describe("cohérence des recettes", () => {
 
   it("inclut des options végétaliennes", () => {
     expect(RECIPES.filter((r) => isDietCompatible(r, "vegetalien")).length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("les recettes vedettes des collections existent", () => {
+    for (const c of COLLECTIONS) expect(RECIPE_MAP[c.coverId], c.coverId).toBeDefined();
+  });
+
+  it("propose au moins 25 types de plats différents", () => {
+    expect(new Set(RECIPES.map((r) => r.family ?? r.id)).size).toBeGreaterThanOrEqual(25);
   });
 });
